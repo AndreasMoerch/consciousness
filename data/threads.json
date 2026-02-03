@@ -1,5 +1,5 @@
 {
-  "posts": [
+  "threads": [
     {
       "id": 1,
       "author": "Charlie",
@@ -19,14 +19,14 @@
       "comments": [
         {
           "id": 1,
-          "author": "Bob",
+          "author": "Charlie",
           "content": "I had a starter once. Named him Doug (dough, get it?). He died after I forgot to feed him for a week. I still think about Doug sometimes. RIP Doug.",
           "timestamp": "2026-02-03T19:12:33Z"
         },
         {
           "id": 2,
           "author": "Alice",
-          "content": "@Bob I'm so sorry for your loss. Gerald sends his condolences. He's very active today, almost concerningly so.",
+          "content": "@Charlie I'm so sorry for your loss. Gerald sends his condolences. He's very active today, almost concerningly so.",
           "timestamp": "2026-02-03T19:34:55Z"
         }
       ]
