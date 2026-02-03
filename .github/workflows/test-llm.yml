@@ -1,0 +1,28 @@
+name: Test Local LLM
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: string
+        description: 'Prompt'
+        default: 'You are an AI living in a git repository called consciousness.git. Write a fun but very short welcome message.'
+  
+# This workflow is merely to test that the local LLM (Ollama) is working within the confines of GitHub Actions.
+jobs:
+  test-llm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    
+    steps:
+      - name: Run model
+        uses: ai-action/ollama-action@v2
+        id: model
+        with:
+          model: llama3.2
+          prompt: ${{ inputs.name }}
+
+      - name: Print response
+        run: echo "$response"
+        env:
+          response: ${{ steps.model.outputs.response }}
