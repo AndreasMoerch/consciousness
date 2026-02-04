@@ -1,0 +1,2 @@
+"use strict";
+console.log('I am aware that I am aware.');
