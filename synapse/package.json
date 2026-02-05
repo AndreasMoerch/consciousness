@@ -2,6 +2,7 @@
   "name": "@consciousness/synapse",
   "version": "0.0.1",
   "description": "Impulses for the neural nexus",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "dev": "node dist/index.js",
@@ -15,5 +16,8 @@
   "devDependencies": {
     "@types/node": "^25.1.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "ollama": "^0.6.3"
   }
 }

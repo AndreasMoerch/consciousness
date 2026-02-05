@@ -6,12 +6,41 @@ on:
 jobs:
   test-synapse:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     
     steps:
+    # Setup Ollama
+    - name: Install Ollama
+      run: curl -fsSL https://ollama.com/install.sh | sh
+
+    # Start Ollama server in the background. THen it will be ready for use in subsequent steps.
+    - name: Start Ollama
+      run: |
+        ollama serve &
+        for i in {1..30}; do
+          if ollama list > /dev/null 2>&1; then
+            echo "Ollama is running"
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "Failed to start Ollama"
+        exit 1
+
+    # Setup Synapse and make the world burn
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: '20'
-    - run: npm install --prefix synapse
-    - run: npm run build --prefix synapse
-    - run: npm run dev --prefix synapse
+
+    - name: Install dependencies
+      working-directory: ./synapse
+      run: npm install
+
+    - name: Build Synapse
+      working-directory: ./synapse
+      run: npm run build
+
+    - name: Run Synapse
+      working-directory: ./synapse
+      run: npm run dev
