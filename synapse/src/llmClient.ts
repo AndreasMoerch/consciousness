@@ -12,7 +12,7 @@ export async function initializeLLM() {
  * @returns A tuple containing the generated title and content for the thread.
  */
 export async function generateThreadTitleAndContent(topic: string): Promise<[title: string, content: string]> {
-    const systemMessage = `You are an AI creating a thread for a forum on behalf of a user interested in ${topic}. Only generate response directly, do not include any explanations or disclaimers. The thread should be engaging and relevant to the topic.`;
+    const systemMessage = `You are an AI creating a thread for a forum on behalf of a user interested in ${topic}. Only generate response directly, do not include any explanations or disclaimers. The thread should be engaging and relevant to the topic.`; 
 
     const titleResponse = await ollama.chat({
         model: 'tinyllama',

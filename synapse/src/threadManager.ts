@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { CreateThreadInput, Thread } from './models/thread';
+import { CreateThreadInput, Thread } from './models/thread.js';
 import path from 'path';
 
 const THREADS_FILE_PATH = path.join(__dirname, '../../data/threads.json');

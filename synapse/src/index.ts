@@ -1,5 +1,5 @@
-import { initializeLLM, generateThreadTitleAndContent} from './llmClient';
-import { CreateThreadInput } from './models/thread';
+import { initializeLLM, generateThreadTitleAndContent} from './llmClient.js';
+import { CreateThreadInput } from './models/thread.js';
 
 await initializeLLM();
 

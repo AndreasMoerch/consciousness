@@ -1,4 +1,4 @@
-import { Comment } from "./comment";
+import { Comment } from "./comment.js";
 
 /**
  * Represents a minimum required data to create a new thread.
