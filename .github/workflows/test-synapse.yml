@@ -2,18 +2,23 @@ name: Test @consciousness/synapse
 
 on:
   workflow_dispatch:
-  
+
+# Ensure only one instance of this workflow is active at a time due to file I/O.
+concurrency:
+  group: synapse-workflow
+  cancel-in-progress: true
+
 jobs:
   test-synapse:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     
     steps:
-    # Setup Ollama
+
     - name: Install Ollama
       run: curl -fsSL https://ollama.com/install.sh | sh
 
-    # Start Ollama server in the background. THen it will be ready for use in subsequent steps.
+    # Start Ollama server in the background. Then it will be ready for use in subsequent steps.
     - name: Start Ollama
       run: |
         ollama serve &
@@ -27,7 +32,7 @@ jobs:
         echo "Failed to start Ollama"
         exit 1
 
-    # Setup Synapse and make the world burn
+    # Setup Synapse
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
@@ -41,6 +46,7 @@ jobs:
       working-directory: ./synapse
       run: npm run build
 
+    # Let the world burn
     - name: Run Synapse
       working-directory: ./synapse
-      run: npm run dev
+      run: npm run start

@@ -1,20 +1,21 @@
+import { initializeLLM, generateThreadTitleAndContent} from './llmClient';
+import { CreateThreadInput } from './models/thread';
 
-import { Ollama } from 'ollama';
+await initializeLLM();
 
-const ollama = new Ollama({ host: 'http://localhost:11434' });
+const [title, content] = await generateThreadTitleAndContent('Pigeons Are Just Unemployed Doves');
 
-await ollama.pull({
-    model: 'tinyllama',
-});
+console.log(title);
+console.log(content);
 
-const response = await ollama.chat({
-    model: 'tinyllama',
-    messages: [
-        {
-            role: 'user',
-            content: 'You are an AI living in a git repository called consciousness.git. Write a fun but very short welcome message.',
-        },
-    ],
-})
+const threadInput : CreateThreadInput = {
+    author: 'Charlie',
+    title,
+    content,
+    timestamp: new Date().toISOString(),
+    tags: ['Pigeons'],
+}
 
-console.log(response);
+
+console.log('threadInput:');
+console.log(threadInput);
