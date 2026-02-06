@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import { CreateThreadInput, Thread } from './models/thread.js';
-import { readFile, FQ_THREADS_FILE_PATH } from './filesystem.js';
+import { writeFile, readFile, FQ_THREADS_FILE_PATH } from './filesystem.js';
 
 /**
  * Represents the structure of the data stored in threads.json file.
@@ -40,7 +40,7 @@ export async function writeThread(threadInput: CreateThreadInput): Promise<numbe
         threads,
     };
 
-    await fs.writeFile(FQ_THREADS_FILE_PATH, JSON.stringify(createThreadsFileInput, null, 2), 'utf-8');
+    await writeFile(FQ_THREADS_FILE_PATH, JSON.stringify(createThreadsFileInput, null, 2));
     return thread.id;
 }
 

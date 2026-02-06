@@ -32,3 +32,12 @@ export async function readFile(path: string): Promise<string> {
         throw error;
     }
 }
+
+export async function writeFile(path: string, content: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
+    try {
+        await fs.writeFile(path, content, encoding);
+    } catch (error) {
+        console.error(`Error writing file at ${path}:`, error);
+        throw error;
+    }
+}
