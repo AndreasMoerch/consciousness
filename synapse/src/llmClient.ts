@@ -33,7 +33,7 @@ export async function generateThreadTitleAndContent(topic: string): Promise<[tit
         model: modelName,
         messages: [
             { role: 'system', content: contentSystemMessage },
-            { role: 'user', content: `Write content for on topic ${topic}` }
+            { role: 'user', content: `Write content for on topic ${topic} that is a bit weird, on-the-nose` }
         ]
     });
 
