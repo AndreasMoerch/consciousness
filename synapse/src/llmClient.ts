@@ -29,7 +29,7 @@ export async function generateThreadTitleAndContent(topic: string): Promise<[tit
     const title = titleResponse.message.content.trim();
 
     const contentResponse = await ollama.chat({
-        model: 'tinyllama',
+        model: 'llama3.2',
         messages: [
             { role: 'system', content: contentSystemMessage },
             { role: 'user', content: `Write content for on topic ${topic}` }
