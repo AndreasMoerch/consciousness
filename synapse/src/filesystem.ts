@@ -33,6 +33,12 @@ export async function readFile(path: string): Promise<string> {
     }
 }
 
+/**
+ * Writes content to a file at the given path. If the file already exists, it will be overwritten.
+ * @param path Fully qualified path for file to write
+ * @param content String content to add to file
+ * @param encoding encoding of content, defaults to utf-8
+ */
 export async function writeFile(path: string, content: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
     try {
         await fs.writeFile(path, content, encoding);

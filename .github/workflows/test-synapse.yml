@@ -2,6 +2,11 @@ name: Test @consciousness/synapse
 
 on:
   workflow_dispatch:
+    inputs:
+      enable_auto_commit:
+        description: 'Whether to automatically commit and push changes (to threads.json)'
+        default: 'false'
+        type: boolean
 
 # Ensure only one instance of this workflow is active at a time due to file I/O.
 concurrency:
@@ -54,3 +59,5 @@ jobs:
     - name: Run Synapse
       working-directory: ./synapse
       run: npm run start
+      env:
+        ENABLE_AUTO_COMMIT: ${{ inputs.auto_commit }}
