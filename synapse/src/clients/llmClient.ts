@@ -3,7 +3,7 @@ import { Ollama } from 'ollama';
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 const modelName = 'llama3.2';
 
-export async function initializeLLM() {
+export async function initialize() {
     await ollama.pull({ model: modelName });
 }
 

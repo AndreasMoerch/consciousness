@@ -1,13 +1,7 @@
 import { promises as fs } from 'fs';
 import { CreateThreadInput, Thread } from './models/thread.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { readFile, FQ_THREADS_FILE_PATH } from './filesystem.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const THREADS_FILE_PATH = path.join(__dirname, '../../data/threads.json');
 /**
  * Represents the structure of the data stored in threads.json file.
  */
@@ -20,7 +14,7 @@ interface ThreadsFile {
  * @returns array of threads.
  */
 export async function readThreads(): Promise<Thread[]> {
-    const threadsFile = await readThreadsFile();
+    const threadsFile = await readFile(FQ_THREADS_FILE_PATH);
     return (JSON.parse(threadsFile) as ThreadsFile).threads;
 }
 
@@ -46,7 +40,7 @@ export async function writeThread(threadInput: CreateThreadInput): Promise<numbe
         threads,
     };
 
-    await fs.writeFile(THREADS_FILE_PATH, JSON.stringify(createThreadsFileInput, null, 2), 'utf-8');
+    await fs.writeFile(FQ_THREADS_FILE_PATH, JSON.stringify(createThreadsFileInput, null, 2), 'utf-8');
     return thread.id;
 }
 
@@ -55,13 +49,4 @@ function findNextId(threads: Thread[]): number {
         return 1;
     }
     return Math.max(...threads.map(thread => thread.id)) + 1;
-}
-
-async function readThreadsFile(): Promise<string> {
-    try {
-        return await fs.readFile(THREADS_FILE_PATH, 'utf-8');
-    } catch (error) {
-        console.error('Error reading threads file:', error);
-        throw error;
-    }
 }

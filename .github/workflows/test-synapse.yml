@@ -8,6 +8,10 @@ concurrency:
   group: synapse-workflow
   cancel-in-progress: true
 
+# Allow workflow to write to the repository, i.e. pushing changes to main branch.
+permissions:
+  contents: write
+
 jobs:
   test-synapse:
     runs-on: ubuntu-24.04

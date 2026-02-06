@@ -1,10 +1,12 @@
-import { initializeLLM, generateThreadTitleAndContent} from './llmClient.js';
+import { initialize as initializeLLM, generateThreadTitleAndContent} from './clients/llmClient.js';
+import { initialize as initializeGit, commitAndPushThreads } from './clients/gitClient.js';
 import { CreateThreadInput } from './models/thread.js';
-import { writeThread, readThreads } from './threadManager.js';
+import { writeThread } from './threadManager.js';
 
 await initializeLLM();
+await initializeGit();
 
-const [title, content] = await generateThreadTitleAndContent('I can haz pigeons?');
+const [title, content] = await generateThreadTitleAndContent('I can haz beavers and butheads?');
 
 console.log(title);
 console.log(content);
@@ -14,12 +16,8 @@ const threadInput : CreateThreadInput = {
     title,
     content,
     timestamp: new Date().toISOString(),
-    tags: ['Pigeons'],
+    tags: ['Beavers', 'Butheads', 'Random'],
 }
 
 await writeThread(threadInput);
-
-const threads = await readThreads();
-
-console.log('threads:');
-console.log(threads);
+await commitAndPushThreads();
