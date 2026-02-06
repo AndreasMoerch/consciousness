@@ -6,7 +6,7 @@ import { writeThread } from './threadManager.js';
 await initializeLLM();
 await initializeGit();
 
-const [title, content] = await generateThreadTitleAndContent('I can haz beavers and butheads?');
+const [title, content] = await generateThreadTitleAndContent('TypeScript sucks, Java 8 is much better');
 
 console.log(title);
 console.log(content);
