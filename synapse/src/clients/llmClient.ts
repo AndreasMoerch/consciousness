@@ -17,7 +17,7 @@ export async function generateThreadTitleAndContent(topic: string): Promise<[tit
     Be creative, casual, and authentic - like a real person posting online. 
     Response with of the raw content - no title, no preamble or explanations.`;
 
-    const titleSystemMessage = `Create a catchy discussion board title (max 60 characters) for the given topic.`;
+    const titleSystemMessage = `Create a catchy discussion board title (max 60 characters) for the given topic. Return ONLY the title text without any quotes, formatting, or punctuation around it.`;
     
     const titleResponse = await ollama.chat({
         model: modelName,
