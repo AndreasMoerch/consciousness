@@ -3,7 +3,7 @@ import { Ollama } from 'ollama';
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 
 export async function initializeLLM() {
-    await ollama.pull({ model: 'tinyllama' });
+    await ollama.pull({ model: 'llama3.2' });
 }
 
 /**
@@ -12,12 +12,14 @@ export async function initializeLLM() {
  * @returns A tuple containing the generated title and content for the thread.
  */
 export async function generateThreadTitleAndContent(topic: string): Promise<[title: string, content: string]> {
-   const contentSystemMessage = `You are creating a discussion board post. Write 2-4 sentences about the given topic. Be creative, casual, and authentic - like a real person posting online. Response only of the content, no preamble or explanations.`;
+   const contentSystemMessage = `You are creating a discussion board post. Write 2-4 sentences about the given topic.
+    Be creative, casual, and authentic - like a real person posting online. 
+    Response with of the raw content, title, no preamble or explanations.`;
 
     const titleSystemMessage = `Create a catchy discussion board title (max 60 characters) for the given topic.`;
     
     const titleResponse = await ollama.chat({
-        model: 'tinyllama',
+        model: 'llama3.2',
         messages: [
             { role: 'system', content: titleSystemMessage },
             { role: 'user', content: `Generate a title for ${topic}` }
