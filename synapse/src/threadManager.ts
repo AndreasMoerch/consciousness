@@ -1,6 +1,11 @@
 import { promises as fs } from 'fs';
 import { CreateThreadInput, Thread } from './models/thread.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const THREADS_FILE_PATH = path.join(__dirname, '../../data/threads.json');
 /**
