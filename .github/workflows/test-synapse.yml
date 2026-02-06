@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       enable_auto_commit:
-        description: 'Whether to automatically commit and push changes (to threads.json)'
+        description: 'Enable automatically commit and push changes (to threads.json)'
         default: 'false'
         type: boolean
 
