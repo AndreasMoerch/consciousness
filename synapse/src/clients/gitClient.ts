@@ -1,5 +1,5 @@
 import simpleGit from 'simple-git';
-import { FQ_REPO_ROOT_DIR } from '../filesystem';
+import { FQ_REPO_ROOT_DIR } from '../filesystem.js';
 
 const git = simpleGit(FQ_REPO_ROOT_DIR);
 
