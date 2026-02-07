@@ -60,4 +60,4 @@ jobs:
       working-directory: ./synapse
       run: npm run start
       env:
-        ENABLE_AUTO_COMMIT: ${{ inputs.auto_commit }}
+        ENABLE_AUTO_COMMIT: ${{ inputs.enable_auto_commit }}
