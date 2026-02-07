@@ -16,3 +16,9 @@ function getEnv(envVariable: string): string | undefined {
  * @default false - do not auto commit by default.
  */
 export const enableAutoCommit = getEnv('ENABLE_AUTO_COMMIT') === 'true';
+/**
+ * Whether to write any changes to local files. Expected to be stringified boolean value ('true' or 'false').
+ * Implementation note: Intended to be a local development feature to avoid changing files when testing.
+ * @default false - does not write to any file by default.
+ */
+export const enableFileWrite = getEnv('ENABLE_FILE_WRITE') === 'true';

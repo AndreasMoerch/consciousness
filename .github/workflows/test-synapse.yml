@@ -4,8 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       enable_auto_commit:
-        description: 'Enable automatically commit and push changes (to threads.json)'
+        description: 'Enable automatically commit and push changes.'
         default: 'false'
+        type: boolean
+      enable_file_write:
+        description: 'Enable writing to local files.'
+        default: 'true' # When running in GitHub Actions, we do generally not care about files being written to, as the changes are discarded if not auto-committed.
         type: boolean
 
 # Ensure only one instance of this workflow is active at a time due to file I/O.
@@ -61,3 +65,4 @@ jobs:
       run: npm run start
       env:
         ENABLE_AUTO_COMMIT: ${{ inputs.enable_auto_commit }}
+        ENABLE_FILE_WRITE: ${{ inputs.enable_file_write }}

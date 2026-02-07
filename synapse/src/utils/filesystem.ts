@@ -1,5 +1,6 @@
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { enableFileWrite } from '../utils/environment.js';
 import fs from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,6 +41,11 @@ export async function readFile(path: string): Promise<string> {
  * @param encoding encoding of content, defaults to utf-8
  */
 export async function writeFile(path: string, content: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
+    if (!enableFileWrite) {
+        console.log(`File writing is disabled. Skipping writing ${content} to ${path}.`);
+        return;
+    }
+
     try {
         await fs.writeFile(path, content, encoding);
     } catch (error) {

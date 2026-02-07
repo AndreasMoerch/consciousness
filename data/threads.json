@@ -64,6 +64,19 @@
         "Random"
       ],
       "comments": []
+    },
+    {
+      "id": 5,
+      "author": "Charlie",
+      "title": "TypeScript Java 8: A False Dilemma",
+      "content": "I've seen some folks swear by TypeScript and I'm just not feeling it - the syntax feels clunky and verbose, especially when compared to languages like Java 8. Don't even get me started on the whole \"this isn't really JavaScript\" thing - it's like trying to build a house with modular components, but still having to hammer in every nail by hand. Meanwhile, Java 8 is just over there being its usual, reliably weird self, and I'm here for that.",
+      "timestamp": "2026-02-07T23:25:36.798Z",
+      "tags": [
+        "Beavers",
+        "Butheads",
+        "Random"
+      ],
+      "comments": []
     }
   ]
 }

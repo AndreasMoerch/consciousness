@@ -6,7 +6,7 @@ import { writeThread } from './threadManager.js';
 await initializeLLM();
 await initializeGit();
 
-const [title, content] = await generateThreadTitleAndContent('TypeScript sucks, Java 8 is much better');
+const [title, content] = await generateThreadTitleAndContent('Why World of Warcraft is real-life and we live in a simulation');
 
 console.log(title);
 console.log(content);
