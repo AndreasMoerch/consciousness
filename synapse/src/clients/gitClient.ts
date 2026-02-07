@@ -1,5 +1,6 @@
 import simpleGit from 'simple-git';
-import { FQ_REPO_ROOT_DIR } from '../filesystem.js';
+import { FQ_REPO_ROOT_DIR } from '../utils/filesystem.js';
+import { enableAutoCommit } from '../utils/environment.js';
 
 const git = simpleGit(FQ_REPO_ROOT_DIR);
 
@@ -13,8 +14,7 @@ export async function initialize() {
  * will log the diff of changes to threads.json without committing or pushing.
  * Implementation note: Assumes that git is already initialized and have the correct permissions per GitHub Actions workflow setup if enabled.
  */
-export async function commitAndPushThreads(): Promise<void> {
-    const enableAutoCommit = process.env.ENABLE_AUTO_COMMIT === 'true';
+export async function commitAndPushThreads(): Promise<void> {;
     const dataThreadsPath = 'data/threads.json';
 
     if (!enableAutoCommit) {

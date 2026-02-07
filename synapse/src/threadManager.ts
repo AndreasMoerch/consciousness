@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import { CreateThreadInput, Thread } from './models/thread.js';
-import { writeFile, readFile, FQ_THREADS_FILE_PATH } from './filesystem.js';
+import { writeFile, readFile, FQ_THREADS_FILE_PATH } from './utils/filesystem.js';
 
 /**
  * Represents the structure of the data stored in threads.json file.
