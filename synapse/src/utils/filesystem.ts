@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
  * Fully qualified path to the repository root.
  * Implementation note: Input is relative for this file, but output is absolute.
  */
-export const FQ_REPO_ROOT_DIR = path.resolve(__dirname, '../..');
+export const FQ_REPO_ROOT_DIR = path.resolve(__dirname, '../../..');
 /**
  * Fully qualified path to the data directory.
  */
