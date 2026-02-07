@@ -1,0 +1,8 @@
+{
+    "name": "Consciousness",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20",
+    "postCreateCommand": [
+        "cp /workspaces/consciousness/.devcontainer/.bashrc ~/.bashrc",
+        "curl -fsSL https://ollama.com/install.sh | sh"
+    ]
+}
