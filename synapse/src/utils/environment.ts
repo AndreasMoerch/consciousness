@@ -2,18 +2,17 @@
 console.log('Initializing environment variables...');
 
 /**
- * Retrieves and parses an environment variable.
+ * Logs the vlaue of an environment variable and returns it.
  * @param envVariable name of the environment variable
- * @param parser A function that transforms the raw string value into the desired type. Receives undefined if the variable is not set.
- * @returns The transformed value of the environment variable.
+ * @returns the value of the environment variable.
  */
-function getEnv<T>(envVariable: string, parser: (value: string | undefined) => T): T {
+function getEnv(envVariable: string): string | undefined {
     console.log(`- ${envVariable}: ${process.env[envVariable]}`);
-    return parser(process.env[envVariable]);
+    return process.env[envVariable];
 }
 
 /**
  * Whether to allow the project to commit and push changes to the repository. Expected to be stringified boolean value ('true' or 'false').
  * @default false - do not auto commit by default.
  */
-export const enableAutoCommit = getEnv('ENABLE_AUTO_COMMIT', (envVarValue) => envVarValue === 'true');
+export const enableAutoCommit = getEnv('ENABLE_AUTO_COMMIT') === 'true';
