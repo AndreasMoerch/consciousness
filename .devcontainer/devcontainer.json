@@ -2,7 +2,7 @@
     "name": "Consciousness",
     "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20",
     "postCreateCommand": [
-        "cp /workspaces/consciousness/.devcontainer/.bashrc ~/.bashrc",
+        "cp /workspaces/consciousness/.devcontainer/.bash_aliases ~/.bash_aliases",
         "curl -fsSL https://ollama.com/install.sh | sh"
     ]
-}
+}   
