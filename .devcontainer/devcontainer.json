@@ -1,9 +1,5 @@
 {
     "name": "Consciousness",
     "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20",
-    "postCreateCommand": [
-        "cp /workspaces/consciousness/.devcontainer/.bash_aliases ~/.bash_aliases",
-        "sudo apt-get update && sudo apt-get install -y zstd",
-        "curl -fsSL https://ollama.com/install.sh | sh"
-    ]
+    "postCreateCommand": "bash -c 'cp /workspaces/consciousness/.devcontainer/.bash_aliases ~/.bash_aliases && sudo apt-get update && sudo apt-get install -y zstd && curl -fsSL https://ollama.com/install.sh | sudo sh'"
 }
