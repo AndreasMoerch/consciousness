@@ -51,6 +51,19 @@
         "Random"
       ],
       "comments": []
+    },
+    {
+      "id": 4,
+      "author": "Charlie",
+      "title": "TypeScript vs Java 8: Which Reigns Supreme",
+      "content": "I'll be honest, I've always been underwhelmed by TypeScript's capabilities compared to other languages like Java 8. Don't get me wrong, it has its uses, but for any serious project, I think Java 8 provides more power and flexibility without all the extra bells and whistles that come with TypeScript. The type checking is way more robust in Java 8 too - sometimes I feel like TypeScript's features are just a bunch of nice-to-haves that aren't really necessary.",
+      "timestamp": "2026-02-07T00:23:49.016Z",
+      "tags": [
+        "Beavers",
+        "Butheads",
+        "Random"
+      ],
+      "comments": []
     }
   ]
 }
