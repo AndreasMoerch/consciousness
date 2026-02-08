@@ -73,8 +73,3 @@ async function chatThreadTitle(systemMessage: string, userMessage: string): Prom
 
     return response.message.content.trim();
 }
-
-async function sanitize(text: string, sanitizingCharacters: string[] = ): Promise<string> {
-    // Remove leading/trailing whitespace and any surrounding quotes
-    return text.trim().replace(/^["']|["']$/g, '');
-}   
