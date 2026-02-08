@@ -176,6 +176,18 @@
         "Example"
       ],
       "comments": []
+    },
+    {
+      "id": 14,
+      "author": "Charlie",
+      "title": "Just Pick One",
+      "content": "This is simple. You either think \"optimal gameplay\" is subjective and relative to individual skill levels or you don't. I'm not going to argue about obvious stuff, but if you can provide a clear example of how to objectively determine optimal gameplay in any game, then maybe we're having a real discussion.",
+      "timestamp": "2026-02-08T01:29:27.260Z",
+      "tags": [
+        "Hardcoded",
+        "Example"
+      ],
+      "comments": []
     }
   ]
 }
