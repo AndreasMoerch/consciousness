@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "ENABLE_FILE_WRITE='true' tsx src/index.ts",
+    "dev": "ENABLE_FILE_WRITE='true' ENABLE_GIT_BOT_AUTHOR='false' tsx src/index.ts",
     "build": "tsc",
     "build:dev": "npm run build && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1"

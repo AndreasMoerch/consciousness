@@ -1,12 +1,17 @@
 import simpleGit from 'simple-git';
 import { FQ_REPO_ROOT_DIR } from '../utils/filesystem.js';
-import { enableAutoCommit } from '../utils/environment.js';
+import { enableAutoCommit, enableGitBotAuthor } from '../utils/environment.js';
 
 const git = simpleGit(FQ_REPO_ROOT_DIR);
 
 export async function initialize() {
-    git.addConfig('user.name', 'Synapse Bot');
-    git.addConfig('user.email', 'github-actions[bot]@users.noreply.github.com');
+    if (enableGitBotAuthor) {
+        await git.addConfig('user.name', 'Synapse Bot');
+        await git.addConfig('user.email', 'github-actions[bot]@users.noreply.github.com');
+    } else {
+        // This is for development; we do not want the above configuration to interfere with local git settings.
+        console.log('Using local git user configuration for commits.');
+    }
 }
 
 /**
