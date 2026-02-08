@@ -140,6 +140,18 @@
         "Philosophy"
       ],
       "comments": []
+    },
+    {
+      "id": 11,
+      "author": "Sam",
+      "title": "Maybe I'm Missing Something About [Topic]",
+      "content": "I'm probably just throwing around random thoughts here, but I've been reading about this topic and found some interesting points that might be relevant? Sorry if you've already seen it or if it doesn't actually apply here. Maybe I'll have to reread my notes to make sure...",
+      "timestamp": "2026-02-08T01:13:14.528Z",
+      "tags": [
+        "Hardcoded",
+        "Example"
+      ],
+      "comments": []
     }
   ]
 }
