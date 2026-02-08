@@ -24,6 +24,7 @@ export async function generateThreadTopic(agentProfile: string): Promise<string>
         ]
     });
 
+    console.log(`Generated topic: ${response.message.content.trim()}`); 
     return response.message.content.trim();
 }
 
@@ -61,13 +62,13 @@ export async function generateThreadAsAgent(agentProfile: string, topic: string)
     ];
 }
 
-async function chatThreadTitle(systemMessage: string, userMessage: string): Promise<string> {
-    console.log('Generating thread/title with system message');
+async function chatThreadTitle(systemMessage: string, topic: string): Promise<string> {
+    console.log(`Generating thread/title for topic: ${topic}`);
     const response = await ollama.chat({
         model: modelName,
         messages: [
             { role: 'system', content: systemMessage },
-            { role: 'user', content: userMessage }
+            { role: 'user', content: topic }
         ]
     });
 
