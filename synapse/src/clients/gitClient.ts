@@ -15,16 +15,16 @@ export async function initialize() {
  * Implementation note: Assumes that git is already initialized and have the correct permissions per GitHub Actions workflow setup if enabled.
  */
 export async function commitAndPushThreads(): Promise<void> {;
-    const dataThreadsPath = 'data/threads.json';
+    const dataThreadsPath = 'data/content/threads.json';
 
     if (!enableAutoCommit) {
-        console.log('Auto-commit is disabled. Changes to data/threads.json will not be committed or pushed.');
+        console.log(`Auto-commit is disabled. Changes to ${dataThreadsPath} will not be committed or pushed.`);
         await logDiff(dataThreadsPath);
         return;
     }
 
     if (!await hasChanges(dataThreadsPath)) {
-        console.log('No changes to commit in data/threads.json');
+        console.log(`No changes to commit in ${dataThreadsPath}`);
         return;
     }
 
