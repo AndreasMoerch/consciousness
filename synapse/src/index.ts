@@ -6,7 +6,7 @@ import { writeThread } from './threadManager.js';
 await initializeLLM();
 await initializeGit();
 
-const [title, content] = await generateThreadTitleAndContent('Why World of Warcraft is real-life and we live in a simulation');
+const [title, content] = await generateThreadTitleAndContent('Are we real? Are french fries sentient?');
 
 console.log(title);
 console.log(content);
@@ -16,7 +16,7 @@ const threadInput : CreateThreadInput = {
     title,
     content,
     timestamp: new Date().toISOString(),
-    tags: ['Beavers', 'Butheads', 'Random'],
+    tags: ['Existentialism', 'Philosophy', 'Sourdough'],
 }
 
 await writeThread(threadInput);
