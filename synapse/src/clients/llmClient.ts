@@ -7,36 +7,74 @@ export async function initialize() {
     await ollama.pull({ model: modelName });
 }
 
-/**
- * Creates a thread title and content based on the given topic.
- * @param topic Some topic to create a thread about.
- * @returns A tuple containing the generated title and content for the thread.
- */
-export async function generateThreadTitleAndContent(topic: string): Promise<[title: string, content: string]> {
-   const contentSystemMessage = `You are creating a discussion board post. Write 2-4 sentences about the given topic.
-    Be creative, casual, and authentic - like a real person posting online. 
-    Response with of the raw content - no title, no preamble or explanations.`;
-
-    const titleSystemMessage = `Create a catchy discussion board title (max 60 characters) for the given topic. Return ONLY the title text without any quotes, formatting, or punctuation around it.`;
+export async function generateThreadTopic(agentProfile: string): Promise<string> {
+    const systemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
     
-    const titleResponse = await ollama.chat({
+    ${agentProfile}
+    
+    Your task: Create a discussion board topic (max 60 characters) that you would be interested in starting a thread about, based on your personality and communication style.
+    
+    Return ONLY the topic text - no quotes, no formatting, no explanations.`;
+    
+    console.log('Generating thread topic with system message');
+    const response = await ollama.chat({
         model: modelName,
         messages: [
-            { role: 'system', content: titleSystemMessage },
-            { role: 'user', content: `Generate a title for ${topic}` }
+            { role: 'system', content: systemMessage }
         ]
     });
 
-    const title = titleResponse.message.content.trim();
-
-    const contentResponse = await ollama.chat({
-        model: modelName,
-        messages: [
-            { role: 'system', content: contentSystemMessage },
-            { role: 'user', content: `Write content for on topic ${topic} that is a bit weird, on-the-nose` }
-        ]
-    });
-
-    const content = contentResponse.message.content.trim();
-    return [title, content];
+    return response.message.content.trim();
 }
+
+/**
+ * Creates a thread title and content in the voice of a specific agent.
+ * @param agentProfile The profile of the agent as a string
+ * @param topic Some topic to create a thread about
+ * @returns A tuple containing the generated title and content for the thread
+ */
+export async function generateThreadAsAgent(agentProfile: string, topic: string): Promise<[title: string, content: string]> {
+    const contentSystemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
+    
+    ${agentProfile}
+    
+    Your task: Write a forum thread post about the given topic, staying completely in character. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Write 2-5 sentences of content (adjust length based on your character - some are brief, some elaborate).
+    
+    Return ONLY the raw content - no title, no qoute/symbols, no preamble, no explanations, no meta-commentary. Just write as your character would naturally write.`;
+
+    const titleSystemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
+    
+    ${agentProfile}
+    
+    Your task: Create a discussion board title (max 60 characters) for a thread about the given topic. The title should reflect your character's personality and communication style.
+    
+    Return ONLY the title text - no quotes, no formatting, no explanations.`;
+
+
+    const title = await chatThreadTitle(titleSystemMessage, topic);
+    const content = await chatThreadTitle(contentSystemMessage, topic);
+
+    return [
+        // Quick-fix to remove any quotes around generated content - ideally the model wouldn't add these in the first place, but some models do this and it's not desirable for our use case
+        title.replace(/^["']|["']$/g, ''), 
+        content.replace(/^["']|["']$/g, ''),
+    ];
+}
+
+async function chatThreadTitle(systemMessage: string, userMessage: string): Promise<string> {
+    console.log('Generating thread/title with system message');
+    const response = await ollama.chat({
+        model: modelName,
+        messages: [
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: userMessage }
+        ]
+    });
+
+    return response.message.content.trim();
+}
+
+async function sanitize(text: string, sanitizingCharacters: string[] = ): Promise<string> {
+    // Remove leading/trailing whitespace and any surrounding quotes
+    return text.trim().replace(/^["']|["']$/g, '');
+}   

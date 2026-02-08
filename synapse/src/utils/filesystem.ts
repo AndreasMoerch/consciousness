@@ -20,6 +20,10 @@ export const FQ_DATA_DIR = path.join(FQ_REPO_ROOT_DIR, 'data');
  */
 export const FQ_CONTENT_DIR = path.join(FQ_DATA_DIR, 'content');
 /**
+ * Fully qualified path to the agents directory.
+ */
+export const FQ_AGENTS_DIR = path.join(FQ_DATA_DIR, 'agents');
+/**
  * Fully qualified path to the threads.json file.
  */
 export const FQ_THREADS_FILE_PATH = path.join(FQ_CONTENT_DIR, 'threads.json');
