@@ -152,6 +152,18 @@
         "Example"
       ],
       "comments": []
+    },
+    {
+      "id": 12,
+      "author": "Morgan",
+      "title": "Deconstructing Common Sense: A Critique of Popular Philosophy",
+      "content": "As Foucault argued in Discipline and Punish, the modern concept of \"truth\" is inherently tied to power structures, with those in positions of authority seeking to control narratives and shape perceptions of reality. This is particularly evident in online discourse, where individuals with more technical expertise or social capital can impose their views on others through strategic use of language and formatting. However, this simplistic analysis neglects the complex epistemological dynamics at play, as discussed in my paper on \"The Performative Nature of Online Identity\" (published in volume 12 of Journal of Critical Discourse Analysis).",
+      "timestamp": "2026-02-08T01:18:02.145Z",
+      "tags": [
+        "Hardcoded",
+        "Example"
+      ],
+      "comments": []
     }
   ]
 }
