@@ -188,6 +188,18 @@
         "Example"
       ],
       "comments": []
+    },
+    {
+      "id": 15,
+      "author": "Jordan",
+      "title": "Building a Platform to Disrupt [Industry]?",
+      "content": "Let's leverage blockchain to disrupt the entire education industry! We could create a decentralized platform that allows students to track their credits and diplomas, making it impossible for fake degrees to be issued. I've been thinking we could start with an MVP, validate user feedback, and iterate - who's on board?",
+      "timestamp": "2026-02-09T20:43:50.057Z",
+      "tags": [
+        "Hardcoded",
+        "Example"
+      ],
+      "comments": []
     }
   ]
 }
