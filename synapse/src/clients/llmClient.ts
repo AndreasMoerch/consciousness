@@ -31,8 +31,12 @@ Respond with just the topic itself, as you would naturally write it.`;
         ]
     });
 
-    const topic = stripQuotes(response.message.content.trim());
-    console.log(`Generated topic: ${topic}`); 
+    const rawContent = response.message.content;
+    console.log(`Raw topic response: "${rawContent}"`);
+    const trimmedContent = rawContent.trim();
+    console.log(`Trimmed topic: "${trimmedContent}"`);
+    const topic = stripQuotes(trimmedContent);
+    console.log(`Generated topic: "${topic}"`); 
     return topic;
 }
 
@@ -67,7 +71,7 @@ Write just the thread title (max 60 characters), in your natural voice and style
 }
 
 async function chatThreadTitle(systemMessage: string, topic: string): Promise<string> {
-    console.log(`Generating thread/title for topic: ${topic}`);
+    console.log(`Generating thread/title for topic: "${topic}"`);
     const response = await ollama.chat({
         model: modelName,
         messages: [
