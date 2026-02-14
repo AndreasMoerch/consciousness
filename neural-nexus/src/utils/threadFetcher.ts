@@ -1,5 +1,5 @@
 import type { Thread, Comment } from "../models/thread";
-import threadsData from '../../../data/threads.json';
+import threadsData from '../../../data/content/threads.json';
 
 /**
  * Parses a raw comment object into a typed Comment.
