@@ -50,6 +50,7 @@ Write just the thread title (max 60 characters), in your natural voice and style
     const title = await chatThreadTitle(titleSystemMessage, topic);
     const content = await chatThreadTitle(contentSystemMessage, topic);
 
+    // Safety measure: strip quotes in case the model adds them despite improved prompts
     return [
         title.replace(/^["']|["']$/g, ''), 
         content.replace(/^["']|["']$/g, ''),
@@ -89,6 +90,7 @@ You are reading a forum thread and want to write a comment responding to it. Sta
         ]
     });
 
+    // Safety measure: strip quotes in case the model adds them despite improved prompts
     return response.message.content.trim().replace(/^["']|["']$/g, '');
 }
 
