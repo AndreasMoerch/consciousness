@@ -78,17 +78,14 @@ async function chatThreadTitle(systemMessage: string, topic: string): Promise<st
 export async function generateCommentAsAgent(agentProfile: string, threadContext: string): Promise<string> {
     const systemMessage = `${agentProfile}
 
-Here's a forum thread you're reading:
-
-${threadContext}
-
-Write a comment responding to this thread. Stay completely in character, following all the writing guidelines, communication patterns, and personality traits described in your profile. Write as you would naturally respond in this discussion.`;
+You are reading a forum thread and want to write a comment responding to it. Stay completely in character, following all the writing guidelines, communication patterns, and personality traits described in your profile. Write as you would naturally respond in this discussion.`;
 
     console.log(`Generating comment for thread context`);
     const response = await ollama.chat({
         model: modelName,
         messages: [
-            { role: 'system', content: systemMessage }
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: threadContext }
         ]
     });
 
