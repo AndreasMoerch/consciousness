@@ -35,6 +35,12 @@
   gap: 2rem;
 }
 
+.thread-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .thread-card {
   background: #1a1a1a;
   border-radius: 12px;
