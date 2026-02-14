@@ -1,7 +1,7 @@
-import { initialize as initializeLLM, generateThreadTopic, generateThreadAsAgent} from './clients/llmClient.js';
+import { initialize as initializeLLM, generateThreadTopic, generateThreadAsAgent, generateCommentAsAgent} from './clients/llmClient.js';
 import { initialize as initializeGit, commitAndPushThreads } from './clients/gitClient.js';
 import { CreateThreadInput } from './models/thread.js';
-import { writeThread } from './threadManager.js';
+import { writeThread, readThreads, writeComment } from './threadManager.js';
 import { readFile, FQ_AGENTS_DIR } from './utils/filesystem.js';
 import path from 'path';
 
@@ -17,16 +17,67 @@ console.log(`Selected agent: ${agentName}`);
 const agentPath = path.join(FQ_AGENTS_DIR, `${agentName}.md`);
 const agentProfile = await readFile(agentPath);
 
-const topic = await generateThreadTopic(agentProfile);
-const [title, content] = await generateThreadAsAgent(agentProfile, topic);
+// Randomize: 20% create thread, 80% create comment
+const shouldCreateThread = Math.random() < 0.2;
 
-const threadInput : CreateThreadInput = {
-    author: agentName,
-    title,
-    content,
-    timestamp: new Date().toISOString(),
-    tags: ['Hardcoded', 'Example']
+if (shouldCreateThread) {
+    console.log('Creating a new thread...');
+    const topic = await generateThreadTopic(agentProfile);
+    const [title, content] = await generateThreadAsAgent(agentProfile, topic);
+
+    const threadInput : CreateThreadInput = {
+        author: agentName,
+        title,
+        content,
+        timestamp: new Date().toISOString(),
+        tags: ['Hardcoded', 'Example']
+    }
+
+    await writeThread(threadInput);
+} else {
+    console.log('Creating a comment on an existing thread...');
+    const threads = await readThreads();
+    
+    if (threads.length === 0) {
+        console.log('No threads available, creating a new thread instead...');
+        const topic = await generateThreadTopic(agentProfile);
+        const [title, content] = await generateThreadAsAgent(agentProfile, topic);
+
+        const threadInput : CreateThreadInput = {
+            author: agentName,
+            title,
+            content,
+            timestamp: new Date().toISOString(),
+            tags: ['Hardcoded', 'Example']
+        }
+
+        await writeThread(threadInput);
+    } else {
+        // Select a random thread
+        const randomThread = threads[Math.floor(Math.random() * threads.length)];
+        console.log(`Selected thread: ${randomThread.id} - "${randomThread.title}"`);
+
+        // Build thread context with all comments
+        let threadContext = `Thread Title: ${randomThread.title}\n`;
+        threadContext += `Thread Author: ${randomThread.author}\n`;
+        threadContext += `Thread Content: ${randomThread.content}\n\n`;
+        
+        if (randomThread.comments.length > 0) {
+            threadContext += `Comments:\n`;
+            for (const comment of randomThread.comments) {
+                threadContext += `- ${comment.author}: ${comment.content}\n`;
+            }
+        } else {
+            threadContext += `(No comments yet)\n`;
+        }
+
+        // Generate comment
+        const commentContent = await generateCommentAsAgent(agentProfile, threadContext);
+        
+        // Write comment
+        await writeComment(randomThread.id, agentName, commentContent);
+        console.log(`Comment added to thread ${randomThread.id}`);
+    }
 }
 
-await writeThread(threadInput);
 await commitAndPushThreads();
