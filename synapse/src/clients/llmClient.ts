@@ -3,6 +3,14 @@ import { Ollama } from 'ollama';
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 const modelName = 'llama3.2';
 
+/**
+ * Strips leading and trailing quotes from a string.
+ * Some LLM models add quotes despite being instructed not to.
+ */
+function stripQuotes(text: string): string {
+    return text.replace(/^["']|["']$/g, '');
+}
+
 export async function initialize() {
     await ollama.pull({ model: modelName });
 }
@@ -22,7 +30,7 @@ Respond with just the topic itself, as you would naturally write it.`;
         ]
     });
 
-    const topic = response.message.content.trim().replace(/^["']|["']$/g, '');
+    const topic = stripQuotes(response.message.content.trim());
     console.log(`Generated topic: ${topic}`); 
     return topic;
 }
@@ -52,8 +60,8 @@ Write just the thread title (max 60 characters), in your natural voice and style
 
     // Safety measure: strip quotes in case the model adds them despite improved prompts
     return [
-        title.replace(/^["']|["']$/g, ''), 
-        content.replace(/^["']|["']$/g, ''),
+        stripQuotes(title), 
+        stripQuotes(content),
     ];
 }
 
@@ -91,7 +99,7 @@ You are reading a forum thread and want to write a comment responding to it. Sta
     });
 
     // Safety measure: strip quotes in case the model adds them despite improved prompts
-    return response.message.content.trim().replace(/^["']|["']$/g, '');
+    return stripQuotes(response.message.content.trim());
 }
 
 /**
@@ -124,7 +132,7 @@ Content: ${content}`;
     });
 
     // Parse the comma-separated tags
-    const tagsText = response.message.content.trim().replace(/^["']|["']$/g, '');
+    const tagsText = stripQuotes(response.message.content.trim());
     const tags = tagsText
         .split(',')
         .map(tag => tag.trim())
