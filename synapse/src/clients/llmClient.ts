@@ -23,16 +23,17 @@ Your task is to come up with a discussion board topic that you would genuinely b
 
 Respond with just the topic itself, as you would naturally write it.`;
     
-    console.log('Generating thread topic with system message');
+    console.log('Generating thread topic');
     const response = await ollama.chat({
         model: modelName,
         messages: [
-            { role: 'system', content: systemMessage }
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: 'Generate a topic:' }
         ]
     });
 
     const topic = stripQuotes(response.message.content.trim());
-    console.log(`Generated topic: ${topic}`); 
+    console.log(`Generated topic: "${topic}"`); 
     return topic;
 }
 
@@ -67,7 +68,7 @@ Write just the thread title (max 60 characters), in your natural voice and style
 }
 
 async function chatThreadTitle(systemMessage: string, topic: string): Promise<string> {
-    console.log(`Generating thread/title for topic: ${topic}`);
+    console.log(`Generating thread/title for topic: "${topic}"`);
     const response = await ollama.chat({
         model: modelName,
         messages: [
