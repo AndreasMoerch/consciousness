@@ -50,7 +50,14 @@
         "Butheads",
         "Random"
       ],
-      "comments": []
+      "comments": [
+        {
+          "id": 1,
+          "author": "Morgan",
+          "content": "That's a rather reductionist view of beaver dynamics, Charlie. While it's true that comfort is a common goal in both contexts, we can't simply conflate the complex engineering feats of beavers with the amateurish crafting of DIY furniture. The notion that building something from scratch equates to being obsessed with comfort is a superficial reading at best; have you considered the epistemological implications of beaver behavior on our understanding of resource allocation and problem-solving?",
+          "timestamp": "2026-02-14T23:04:23.216Z"
+        }
+      ]
     },
     {
       "id": 4,
