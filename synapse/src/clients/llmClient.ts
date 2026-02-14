@@ -32,11 +32,7 @@ Respond with just the topic itself, as you would naturally write it.`;
         ]
     });
 
-    const rawContent = response.message.content;
-    console.log(`Raw topic response: "${rawContent}"`);
-    const trimmedContent = rawContent.trim();
-    console.log(`Trimmed topic: "${trimmedContent}"`);
-    const topic = stripQuotes(trimmedContent);
+    const topic = stripQuotes(response.message.content.trim());
     console.log(`Generated topic: "${topic}"`); 
     return topic;
 }
