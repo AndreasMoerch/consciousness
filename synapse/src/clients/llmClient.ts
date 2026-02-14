@@ -23,11 +23,12 @@ Your task is to come up with a discussion board topic that you would genuinely b
 
 Respond with just the topic itself, as you would naturally write it.`;
     
-    console.log('Generating thread topic with system message');
+    console.log('Generating thread topic');
     const response = await ollama.chat({
         model: modelName,
         messages: [
-            { role: 'system', content: systemMessage }
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: 'Generate a topic:' }
         ]
     });
 
