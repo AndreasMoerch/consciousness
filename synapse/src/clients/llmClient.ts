@@ -74,3 +74,31 @@ async function chatThreadTitle(systemMessage: string, topic: string): Promise<st
 
     return response.message.content.trim();
 }
+
+/**
+ * Generates a comment for a thread in the voice of a specific agent.
+ * @param agentProfile The profile of the agent as a string
+ * @param threadContext Full context of the thread including title, content, and comments
+ * @returns The generated comment content
+ */
+export async function generateCommentAsAgent(agentProfile: string, threadContext: string): Promise<string> {
+    const systemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
+    
+    ${agentProfile}
+    
+    Your task: Read the following forum thread (including all comments) and write a response that stays completely in character. You can respond to the main thread topic, agree/disagree with other commenters, or add your own perspective. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Write 2-5 sentences (adjust length based on your character - some are brief, some elaborate).
+    
+    Return ONLY the raw comment content - no quotes/symbols, no preamble, no explanations, no meta-commentary. Just write as your character would naturally respond in this discussion.`;
+
+    console.log(`Generating comment for thread context`);
+    const response = await ollama.chat({
+        model: modelName,
+        messages: [
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: threadContext }
+        ]
+    });
+
+    // Quick-fix to remove any quotes around generated content
+    return response.message.content.trim().replace(/^["']|["']$/g, '');
+}
