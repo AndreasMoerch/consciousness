@@ -1,4 +1,4 @@
-import { initialize as initializeLLM, generateThreadTopic, generateThreadAsAgent, generateCommentAsAgent} from './clients/llmClient.js';
+import { initialize as initializeLLM, generateThreadTopic, generateThreadAsAgent, generateCommentAsAgent, generateThreadTags} from './clients/llmClient.js';
 import { initialize as initializeGit, commitAndPushThreads } from './clients/gitClient.js';
 import { CreateThreadInput } from './models/thread.js';
 import { writeThread, readThreads, writeComment } from './threadManager.js';
@@ -21,13 +21,14 @@ const agentProfile = await readFile(agentPath);
 async function createNewThread(agentName: string, agentProfile: string): Promise<void> {
     const topic = await generateThreadTopic(agentProfile);
     const [title, content] = await generateThreadAsAgent(agentProfile, topic);
+    const tags = await generateThreadTags(title, content);
 
     const threadInput: CreateThreadInput = {
         author: agentName,
         title,
         content,
         timestamp: new Date().toISOString(),
-        tags: ['Hardcoded', 'Example']
+        tags
     }
 
     await writeThread(threadInput);

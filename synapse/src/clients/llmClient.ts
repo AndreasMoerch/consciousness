@@ -2,19 +2,26 @@ import { Ollama } from 'ollama';
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 const modelName = 'llama3.2';
+const MAX_TAGS = 4;
+
+/**
+ * Strips leading and trailing quotes from a string.
+ * Some LLM models add quotes despite being instructed not to.
+ */
+function stripQuotes(text: string): string {
+    return text.replace(/^["']|["']$/g, '');
+}
 
 export async function initialize() {
     await ollama.pull({ model: modelName });
 }
 
 export async function generateThreadTopic(agentProfile: string): Promise<string> {
-    const systemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
+    const systemMessage = `${agentProfile}
     
-    ${agentProfile}
-    
-    Your task: Create a discussion board topic (max 60 characters) that you would be interested in starting a thread about, based on your personality and communication style.
-    
-    Return ONLY the topic text - no quotes, no formatting, no explanations.`;
+Your task is to come up with a discussion board topic that you would genuinely be interested in starting a thread about. The topic should naturally reflect your personality, interests, and communication style as described above. Keep it under 60 characters.
+
+Respond with just the topic itself, as you would naturally write it.`;
     
     console.log('Generating thread topic with system message');
     const response = await ollama.chat({
@@ -24,8 +31,9 @@ export async function generateThreadTopic(agentProfile: string): Promise<string>
         ]
     });
 
-    console.log(`Generated topic: ${response.message.content.trim()}`); 
-    return response.message.content.trim();
+    const topic = stripQuotes(response.message.content.trim());
+    console.log(`Generated topic: ${topic}`); 
+    return topic;
 }
 
 /**
@@ -35,30 +43,26 @@ export async function generateThreadTopic(agentProfile: string): Promise<string>
  * @returns A tuple containing the generated title and content for the thread
  */
 export async function generateThreadAsAgent(agentProfile: string, topic: string): Promise<[title: string, content: string]> {
-    const contentSystemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
-    
-    ${agentProfile}
-    
-    Your task: Write a forum thread post about the given topic, staying completely in character. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Write 2-5 sentences of content (adjust length based on your character - some are brief, some elaborate).
-    
-    Return ONLY the raw content - no title, no qoute/symbols, no preamble, no explanations, no meta-commentary. Just write as your character would naturally write.`;
+    const contentSystemMessage = `${agentProfile}
 
-    const titleSystemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
-    
-    ${agentProfile}
-    
-    Your task: Create a discussion board title (max 60 characters) for a thread about the given topic. The title should reflect your character's personality and communication style.
-    
-    Return ONLY the title text - no quotes, no formatting, no explanations.`;
+You want to start a forum thread about: ${topic}
+
+Write the main post content, staying completely in character. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Your writing should naturally reflect who you are.`;
+
+    const titleSystemMessage = `${agentProfile}
+
+You want to start a forum thread about: ${topic}
+
+Write just the thread title (max 60 characters), in your natural voice and style as described in your profile.`;
 
 
     const title = await chatThreadTitle(titleSystemMessage, topic);
     const content = await chatThreadTitle(contentSystemMessage, topic);
 
+    // Safety measure: strip quotes in case the model adds them despite improved prompts
     return [
-        // Quick-fix to remove any quotes around generated content - ideally the model wouldn't add these in the first place, but some models do this and it's not desirable for our use case
-        title.replace(/^["']|["']$/g, ''), 
-        content.replace(/^["']|["']$/g, ''),
+        stripQuotes(title), 
+        stripQuotes(content),
     ];
 }
 
@@ -82,13 +86,9 @@ async function chatThreadTitle(systemMessage: string, topic: string): Promise<st
  * @returns The generated comment content
  */
 export async function generateCommentAsAgent(agentProfile: string, threadContext: string): Promise<string> {
-    const systemMessage = `You are roleplaying as a forum user. Below is your complete personality profile:
-    
-    ${agentProfile}
-    
-    Your task: Read the following forum thread (including all comments) and write a response that stays completely in character. You can respond to the main thread topic, agree/disagree with other commenters, or add your own perspective. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Write 2-5 sentences (adjust length based on your character - some are brief, some elaborate).
-    
-    Return ONLY the raw comment content - no quotes/symbols, no preamble, no explanations, no meta-commentary. Just write as your character would naturally respond in this discussion.`;
+    const systemMessage = `${agentProfile}
+
+You are reading a forum thread and want to write a comment responding to it. Stay completely in character, following all the writing guidelines, communication patterns, and personality traits described in your profile. Write as you would naturally respond in this discussion.`;
 
     console.log(`Generating comment for thread context`);
     const response = await ollama.chat({
@@ -99,6 +99,47 @@ export async function generateCommentAsAgent(agentProfile: string, threadContext
         ]
     });
 
-    // Quick-fix to remove any quotes around generated content
-    return response.message.content.trim().replace(/^["']|["']$/g, '');
+    // Safety measure: strip quotes in case the model adds them despite improved prompts
+    return stripQuotes(response.message.content.trim());
+}
+
+/**
+ * Generates relevant tags for a thread based on its title and content.
+ * @param title The thread title
+ * @param content The thread content
+ * @returns An array of 2-4 relevant tags
+ */
+export async function generateThreadTags(title: string, content: string): Promise<string[]> {
+    const systemMessage = `You are a helpful assistant that generates relevant topic tags for forum threads.
+
+Given a thread title and content, identify 2-${MAX_TAGS} concise, relevant tags that categorize the discussion. Tags should be:
+- Short (1-2 words each)
+- Descriptive of the main topics or themes
+- Useful for organizing and searching threads
+
+Respond with only the tags, separated by commas. For example: "gaming, strategy, multiplayer" or "philosophy, ethics, consciousness"`;
+
+    const userMessage = `Title: ${title}
+
+Content: ${content}`;
+
+    console.log('Generating thread tags');
+    const response = await ollama.chat({
+        model: modelName,
+        messages: [
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: userMessage }
+        ]
+    });
+
+    // Parse the comma-separated tags
+    const tagsText = stripQuotes(response.message.content.trim());
+    const tags = tagsText
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0)
+        .slice(0, MAX_TAGS);
+
+    console.log(`Generated tags: ${tags.join(', ')}`);
+    return tags;
 }
