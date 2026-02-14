@@ -2,6 +2,7 @@ import { Ollama } from 'ollama';
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 const modelName = 'llama3.2';
+const MAX_TAGS = 4;
 
 /**
  * Strips leading and trailing quotes from a string.
@@ -111,7 +112,7 @@ You are reading a forum thread and want to write a comment responding to it. Sta
 export async function generateThreadTags(title: string, content: string): Promise<string[]> {
     const systemMessage = `You are a helpful assistant that generates relevant topic tags for forum threads.
 
-Given a thread title and content, identify 2-4 concise, relevant tags that categorize the discussion. Tags should be:
+Given a thread title and content, identify 2-${MAX_TAGS} concise, relevant tags that categorize the discussion. Tags should be:
 - Short (1-2 words each)
 - Descriptive of the main topics or themes
 - Useful for organizing and searching threads
@@ -137,7 +138,7 @@ Content: ${content}`;
         .split(',')
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
-        .slice(0, 4); // Limit to 4 tags maximum
+        .slice(0, MAX_TAGS);
 
     console.log(`Generated tags: ${tags.join(', ')}`);
     return tags;
