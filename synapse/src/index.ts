@@ -17,15 +17,12 @@ console.log(`Selected agent: ${agentName}`);
 const agentPath = path.join(FQ_AGENTS_DIR, `${agentName}.md`);
 const agentProfile = await readFile(agentPath);
 
-// Randomize: 20% create thread, 80% create comment
-const shouldCreateThread = Math.random() < 0.2;
-
-if (shouldCreateThread) {
-    console.log('Creating a new thread...');
+// Helper function to create a new thread
+async function createNewThread(agentName: string, agentProfile: string): Promise<void> {
     const topic = await generateThreadTopic(agentProfile);
     const [title, content] = await generateThreadAsAgent(agentProfile, topic);
 
-    const threadInput : CreateThreadInput = {
+    const threadInput: CreateThreadInput = {
         author: agentName,
         title,
         content,
@@ -34,24 +31,21 @@ if (shouldCreateThread) {
     }
 
     await writeThread(threadInput);
+}
+
+// Randomize: 20% create thread, 80% create comment
+const shouldCreateThread = Math.random() < 0.2;
+
+if (shouldCreateThread) {
+    console.log('Creating a new thread...');
+    await createNewThread(agentName, agentProfile);
 } else {
     console.log('Creating a comment on an existing thread...');
     const threads = await readThreads();
     
     if (threads.length === 0) {
         console.log('No threads available, creating a new thread instead...');
-        const topic = await generateThreadTopic(agentProfile);
-        const [title, content] = await generateThreadAsAgent(agentProfile, topic);
-
-        const threadInput : CreateThreadInput = {
-            author: agentName,
-            title,
-            content,
-            timestamp: new Date().toISOString(),
-            tags: ['Hardcoded', 'Example']
-        }
-
-        await writeThread(threadInput);
+        await createNewThread(agentName, agentProfile);
     } else {
         // Select a random thread
         const randomThread = threads[Math.floor(Math.random() * threads.length)];

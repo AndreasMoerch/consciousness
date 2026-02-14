@@ -80,10 +80,10 @@ export async function writeComment(threadId: number, author: string, content: st
 
     thread.comments.push(comment);
 
-    const createThreadsFileInput: ThreadsFile = {
+    const updatedThreadsFile: ThreadsFile = {
         threads,
     };
 
-    await writeFile(FQ_THREADS_FILE_PATH, JSON.stringify(createThreadsFileInput, null, 2));
+    await writeFile(FQ_THREADS_FILE_PATH, JSON.stringify(updatedThreadsFile, null, 2));
     return commentId;
 }
