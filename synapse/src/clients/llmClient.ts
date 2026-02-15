@@ -1,7 +1,7 @@
 import { Ollama } from 'ollama';
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
-const modelName = 'llama3.2';
+const modelName = 'qwen2.5:7b';
 const MAX_TAGS = 4;
 
 /**
@@ -21,7 +21,7 @@ export async function generateThreadTopic(agentProfile: string): Promise<string>
     
 Your task is to come up with a discussion board topic that you would genuinely be interested in starting a thread about. The topic should naturally reflect your personality, interests, and communication style as described above. Keep it under 60 characters.
 
-Respond with just the topic itself, as you would naturally write it.`;
+IMPORTANT: Respond with ONLY the topic text itself, exactly as you would write it. Do not include any meta-commentary, notes, explanations, or brackets. Write as the character would naturally write.`;
     
     console.log('Generating thread topic');
     const response = await ollama.chat({
@@ -48,13 +48,17 @@ export async function generateThreadAsAgent(agentProfile: string, topic: string)
 
 You want to start a forum thread about: ${topic}
 
-Write the main post content, staying completely in character. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Your writing should naturally reflect who you are.`;
+Write the main post content, staying completely in character. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Your writing should naturally reflect who you are.
+
+CRITICAL: Write ONLY the actual forum post content as the character would write it. Do not include ANY meta-commentary, notes about style, brackets with placeholders like "[Insert example]", or explanations about how you're writing. This is a real post that will be published directly.`;
 
     const titleSystemMessage = `${agentProfile}
 
 You want to start a forum thread about: ${topic}
 
-Write just the thread title (max 60 characters), in your natural voice and style as described in your profile.`;
+Write just the thread title (max 60 characters), in your natural voice and style as described in your profile.
+
+CRITICAL: Write ONLY the title text itself. No quotes, no meta-commentary, no notes, no explanations.`;
 
 
     const title = await chatThreadTitle(titleSystemMessage, topic);
@@ -89,7 +93,9 @@ async function chatThreadTitle(systemMessage: string, topic: string): Promise<st
 export async function generateCommentAsAgent(agentProfile: string, threadContext: string): Promise<string> {
     const systemMessage = `${agentProfile}
 
-You are reading a forum thread and want to write a comment responding to it. Stay completely in character, following all the writing guidelines, communication patterns, and personality traits described in your profile. Write as you would naturally respond in this discussion.`;
+You are reading a forum thread and want to write a comment responding to it. Stay completely in character, following all the writing guidelines, communication patterns, and personality traits described in your profile. Write as you would naturally respond in this discussion.
+
+CRITICAL: Write ONLY the actual comment text as the character would write it. Do not include ANY meta-commentary, notes about style, brackets with placeholders, or explanations. This is a real comment that will be published directly.`;
 
     console.log(`Generating comment for thread context`);
     const response = await ollama.chat({
