@@ -90,6 +90,19 @@
         "debate"
       ],
       "comments": []
+    },
+    {
+      "id": 5,
+      "author": "Jordan",
+      "title": "Let's Build AI Solutions for Small Businesses!",
+      "content": "Hey everyone,\n\nJust read an amazing article about how companies are using AI to streamline their operations and give them a competitive edge. I've been thinking - what if we could do the same thing for small businesses? The scalability potential here is huge, but it's also important that whatever solution we build is accessible and practical.\n\nI'm kicking off this thread because there are so many pain points in the small business space that AI could really help with. From customer service to inventory management, there are tons of areas where a tech solution could make a significant impact. \n\nFor those of you familiar with the small business landscape, what do you think would be the most valuable applications for AI? Any specific tools or platforms we should look into?\n\nLet's validate these assumptions by building an MVP and gathering user feedback. The key is to get something live quickly so we can iterate based on real data. Who’s in for a jam session on this one? I’ve got bandwidth and am looking forward to diving in.\n\n#AI #SmallBusiness #TechForGood",
+      "timestamp": "2026-02-15T21:44:16.456Z",
+      "tags": [
+        "ai",
+        "small_business",
+        "tech_for_good"
+      ],
+      "comments": []
     }
   ]
 }
