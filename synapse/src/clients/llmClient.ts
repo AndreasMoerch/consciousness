@@ -1,7 +1,7 @@
 import { Ollama } from 'ollama';
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
-const modelName = 'llama3.2';
+const modelName = 'qwen2.5:7b';
 const MAX_TAGS = 4;
 
 /**
@@ -10,6 +10,30 @@ const MAX_TAGS = 4;
  */
 function stripQuotes(text: string): string {
     return text.replace(/^["']|["']$/g, '');
+}
+
+/**
+ * Removes leaked prompting structures and meta-commentary from LLM outputs.
+ * Filters out patterns like "[Insert...]", "(Note:...)", placeholder text, etc.
+ */
+function cleanPromptLeakage(text: string): string {
+    // Remove text within square brackets that looks like instructions
+    let cleaned = text.replace(/\[Insert[^\]]*\]/gi, '');
+    
+    // Remove parenthetical notes about style, writing, etc.
+    cleaned = cleaned.replace(/\(Note:[\s\S]*?\)/gi, '');
+    
+    // Remove standalone notes at the end
+    cleaned = cleaned.replace(/\n\n\(Note:[\s\S]*$/gi, '');
+    
+    // Remove "hypothetical example" or similar placeholder text
+    cleaned = cleaned.replace(/\[hypothetical example\]/gi, '');
+    
+    // Clean up any resulting multiple blank lines
+    cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+    
+    // Trim any trailing whitespace
+    return cleaned.trim();
 }
 
 export async function initialize() {
@@ -21,7 +45,7 @@ export async function generateThreadTopic(agentProfile: string): Promise<string>
     
 Your task is to come up with a discussion board topic that you would genuinely be interested in starting a thread about. The topic should naturally reflect your personality, interests, and communication style as described above. Keep it under 60 characters.
 
-Respond with just the topic itself, as you would naturally write it.`;
+IMPORTANT: Respond with ONLY the topic text itself, exactly as you would write it. Do not include any meta-commentary, notes, explanations, or brackets. Write as the character would naturally write.`;
     
     console.log('Generating thread topic');
     const response = await ollama.chat({
@@ -48,22 +72,26 @@ export async function generateThreadAsAgent(agentProfile: string, topic: string)
 
 You want to start a forum thread about: ${topic}
 
-Write the main post content, staying completely in character. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Your writing should naturally reflect who you are.`;
+Write the main post content, staying completely in character. Follow all the writing guidelines, communication patterns, and personality traits described in your profile. Your writing should naturally reflect who you are.
+
+CRITICAL: Write ONLY the actual forum post content as the character would write it. Do not include ANY meta-commentary, notes about style, brackets with placeholders like "[Insert example]", or explanations about how you're writing. This is a real post that will be published directly.`;
 
     const titleSystemMessage = `${agentProfile}
 
 You want to start a forum thread about: ${topic}
 
-Write just the thread title (max 60 characters), in your natural voice and style as described in your profile.`;
+Write just the thread title (max 60 characters), in your natural voice and style as described in your profile.
+
+CRITICAL: Write ONLY the title text itself. No quotes, no meta-commentary, no notes, no explanations.`;
 
 
     const title = await chatThreadTitle(titleSystemMessage, topic);
     const content = await chatThreadTitle(contentSystemMessage, topic);
 
-    // Safety measure: strip quotes in case the model adds them despite improved prompts
+    // Clean any leaked prompting structures and strip quotes
     return [
-        stripQuotes(title), 
-        stripQuotes(content),
+        stripQuotes(cleanPromptLeakage(title)), 
+        stripQuotes(cleanPromptLeakage(content)),
     ];
 }
 
@@ -89,7 +117,9 @@ async function chatThreadTitle(systemMessage: string, topic: string): Promise<st
 export async function generateCommentAsAgent(agentProfile: string, threadContext: string): Promise<string> {
     const systemMessage = `${agentProfile}
 
-You are reading a forum thread and want to write a comment responding to it. Stay completely in character, following all the writing guidelines, communication patterns, and personality traits described in your profile. Write as you would naturally respond in this discussion.`;
+You are reading a forum thread and want to write a comment responding to it. Stay completely in character, following all the writing guidelines, communication patterns, and personality traits described in your profile. Write as you would naturally respond in this discussion.
+
+CRITICAL: Write ONLY the actual comment text as the character would write it. Do not include ANY meta-commentary, notes about style, brackets with placeholders, or explanations. This is a real comment that will be published directly.`;
 
     console.log(`Generating comment for thread context`);
     const response = await ollama.chat({
@@ -100,8 +130,8 @@ You are reading a forum thread and want to write a comment responding to it. Sta
         ]
     });
 
-    // Safety measure: strip quotes in case the model adds them despite improved prompts
-    return stripQuotes(response.message.content.trim());
+    // Clean any leaked prompting structures and strip quotes
+    return stripQuotes(cleanPromptLeakage(response.message.content.trim()));
 }
 
 /**
