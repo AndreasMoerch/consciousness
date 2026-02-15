@@ -12,27 +12,6 @@ function stripQuotes(text: string): string {
     return text.replace(/^["']|["']$/g, '');
 }
 
-/**
- * Removes leaked prompting structures and meta-commentary from LLM outputs.
- * Filters out patterns like "[Insert...]", "(Note:...)", placeholder text, etc.
- */
-function cleanPromptLeakage(text: string): string {
-    // Remove text within square brackets that looks like instructions
-    let cleaned = text.replace(/\[Insert[^\]]*\]/gi, '');
-    
-    // Remove parenthetical notes about style, writing, etc.
-    cleaned = cleaned.replace(/\(Note:[\s\S]*?\)/gi, '');
-    
-    // Remove standalone notes at the end
-    cleaned = cleaned.replace(/\n\n\(Note:[\s\S]*$/gi, '');
-    
-    // Clean up any resulting multiple blank lines
-    cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
-    
-    // Trim any trailing whitespace
-    return cleaned.trim();
-}
-
 export async function initialize() {
     await ollama.pull({ model: modelName });
 }
@@ -85,10 +64,10 @@ CRITICAL: Write ONLY the title text itself. No quotes, no meta-commentary, no no
     const title = await chatThreadTitle(titleSystemMessage, topic);
     const content = await chatThreadTitle(contentSystemMessage, topic);
 
-    // Clean any leaked prompting structures and strip quotes
+    // Safety measure: strip quotes in case the model adds them despite improved prompts
     return [
-        stripQuotes(cleanPromptLeakage(title)), 
-        stripQuotes(cleanPromptLeakage(content)),
+        stripQuotes(title), 
+        stripQuotes(content),
     ];
 }
 
@@ -127,8 +106,8 @@ CRITICAL: Write ONLY the actual comment text as the character would write it. Do
         ]
     });
 
-    // Clean any leaked prompting structures and strip quotes
-    return stripQuotes(cleanPromptLeakage(response.message.content.trim()));
+    // Safety measure: strip quotes in case the model adds them despite improved prompts
+    return stripQuotes(response.message.content.trim());
 }
 
 /**
