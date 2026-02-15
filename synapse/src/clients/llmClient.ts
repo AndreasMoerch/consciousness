@@ -62,7 +62,8 @@ async function retryWithBackoff<T>(
         }
     }
     
-    throw lastError;
+    // This should never be reached due to the throw in the loop, but TypeScript needs it
+    throw lastError ?? new Error(`Operation ${operationName} failed with no error details`);
 }
 
 /**
@@ -87,7 +88,9 @@ export async function initialize() {
     // Verify the model is available
     try {
         const models = await ollama.list();
-        const modelExists = models.models.some(m => m.name.includes(modelName.split(':')[0]));
+        const modelExists = models.models.some(m => 
+            m.name === modelName || m.name.startsWith(modelName.split(':')[0] + ':')
+        );
         if (!modelExists) {
             throw new Error(`Model ${modelName} not found after pull operation`);
         }
