@@ -1,8 +1,70 @@
 import { Ollama } from 'ollama';
 
-const ollama = new Ollama({ host: 'http://localhost:11434' });
+// Configuration constants
+const OLLAMA_HOST = 'http://localhost:11434';
 const modelName = 'qwen2.5:7b';
 const MAX_TAGS = 4;
+const OLLAMA_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes timeout for LLM operations
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY_MS = 1000;
+
+// Custom fetch with timeout support
+function createFetchWithTimeout(timeoutMs: number): typeof fetch {
+    return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        
+        try {
+            const response = await fetch(input, {
+                ...init,
+                signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+            return response;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
+        }
+    };
+}
+
+// Create Ollama client with custom fetch that includes timeout
+const ollama = new Ollama({ 
+    host: OLLAMA_HOST,
+    fetch: createFetchWithTimeout(OLLAMA_TIMEOUT_MS)
+});
+
+/**
+ * Retries an async operation with exponential backoff
+ */
+async function retryWithBackoff<T>(
+    operation: () => Promise<T>,
+    operationName: string,
+    maxRetries: number = MAX_RETRIES
+): Promise<T> {
+    let lastError: Error | undefined;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            lastError = error as Error;
+            
+            if (attempt === maxRetries) {
+                console.error(`Failed after ${maxRetries + 1} attempts for ${operationName}:`, error);
+                throw error;
+            }
+            
+            const delay = INITIAL_RETRY_DELAY_MS * Math.pow(2, attempt);
+            console.log(`Attempt ${attempt + 1} failed for ${operationName}, retrying in ${delay}ms...`);
+            console.error(`Error:`, error);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+    
+    // This should never be reached due to the throw in the loop, but TypeScript needs it
+    throw lastError ?? new Error(`Operation ${operationName} failed with no error details`);
+}
 
 /**
  * Strips leading and trailing quotes from a string.
@@ -13,7 +75,30 @@ function stripQuotes(text: string): string {
 }
 
 export async function initialize() {
-    await ollama.pull({ model: modelName });
+    console.log(`Initializing LLM client with model: ${modelName}`);
+    await retryWithBackoff(
+        async () => {
+            console.log(`Pulling model: ${modelName}...`);
+            await ollama.pull({ model: modelName });
+            console.log(`Model ${modelName} pulled successfully`);
+        },
+        'model pull'
+    );
+    
+    // Verify the model is available
+    try {
+        const models = await ollama.list();
+        const modelExists = models.models.some(m => 
+            m.name === modelName || m.name.startsWith(modelName.split(':')[0] + ':')
+        );
+        if (!modelExists) {
+            throw new Error(`Model ${modelName} not found after pull operation`);
+        }
+        console.log(`Model ${modelName} verified and ready`);
+    } catch (error) {
+        console.error('Error verifying model:', error);
+        throw error;
+    }
 }
 
 export async function generateThreadTopic(agentProfile: string): Promise<string> {
@@ -24,13 +109,16 @@ Your task is to come up with a discussion board topic that you would genuinely b
 IMPORTANT: Respond with ONLY the topic text itself, exactly as you would write it. Do not include any meta-commentary, notes, explanations, or brackets. Write as the character would naturally write.`;
     
     console.log('Generating thread topic');
-    const response = await ollama.chat({
-        model: modelName,
-        messages: [
-            { role: 'system', content: systemMessage },
-            { role: 'user', content: 'Generate a topic:' }
-        ]
-    });
+    const response = await retryWithBackoff(
+        async () => await ollama.chat({
+            model: modelName,
+            messages: [
+                { role: 'system', content: systemMessage },
+                { role: 'user', content: 'Generate a topic:' }
+            ]
+        }),
+        'generateThreadTopic'
+    );
 
     const topic = stripQuotes(response.message.content.trim());
     console.log(`Generated topic: "${topic}"`); 
@@ -73,13 +161,16 @@ CRITICAL: Write ONLY the title text itself. No quotes, no meta-commentary, no no
 
 async function chatThreadTitle(systemMessage: string, topic: string): Promise<string> {
     console.log(`Generating thread/title for topic: "${topic}"`);
-    const response = await ollama.chat({
-        model: modelName,
-        messages: [
-            { role: 'system', content: systemMessage },
-            { role: 'user', content: topic }
-        ]
-    });
+    const response = await retryWithBackoff(
+        async () => await ollama.chat({
+            model: modelName,
+            messages: [
+                { role: 'system', content: systemMessage },
+                { role: 'user', content: topic }
+            ]
+        }),
+        'chatThreadTitle'
+    );
 
     return response.message.content.trim();
 }
@@ -98,13 +189,16 @@ You are reading a forum thread and want to write a comment responding to it. Sta
 CRITICAL: Write ONLY the actual comment text as the character would write it. Do not include ANY meta-commentary, notes about style, brackets with placeholders, or explanations. This is a real comment that will be published directly.`;
 
     console.log(`Generating comment for thread context`);
-    const response = await ollama.chat({
-        model: modelName,
-        messages: [
-            { role: 'system', content: systemMessage },
-            { role: 'user', content: threadContext }
-        ]
-    });
+    const response = await retryWithBackoff(
+        async () => await ollama.chat({
+            model: modelName,
+            messages: [
+                { role: 'system', content: systemMessage },
+                { role: 'user', content: threadContext }
+            ]
+        }),
+        'generateCommentAsAgent'
+    );
 
     // Safety measure: strip quotes in case the model adds them despite improved prompts
     return stripQuotes(response.message.content.trim());
@@ -131,13 +225,16 @@ Respond with only the tags, separated by commas. For example: "gaming, strategy,
 Content: ${content}`;
 
     console.log('Generating thread tags');
-    const response = await ollama.chat({
-        model: modelName,
-        messages: [
-            { role: 'system', content: systemMessage },
-            { role: 'user', content: userMessage }
-        ]
-    });
+    const response = await retryWithBackoff(
+        async () => await ollama.chat({
+            model: modelName,
+            messages: [
+                { role: 'system', content: systemMessage },
+                { role: 'user', content: userMessage }
+            ]
+        }),
+        'generateThreadTags'
+    );
 
     // Parse the comma-separated tags
     const tagsText = stripQuotes(response.message.content.trim());
