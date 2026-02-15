@@ -1,0 +1,35 @@
+.app {
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+.threads-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.error-message {
+  color: #ef4444;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.empty-message {
+  color: #999;
+  text-align: center;
+  padding: 3rem 2rem;
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .threads-container {
+    gap: 1rem;
+  }
+}
