@@ -26,9 +26,6 @@ function cleanPromptLeakage(text: string): string {
     // Remove standalone notes at the end
     cleaned = cleaned.replace(/\n\n\(Note:[\s\S]*$/gi, '');
     
-    // Remove "hypothetical example" or similar placeholder text
-    cleaned = cleaned.replace(/\[hypothetical example\]/gi, '');
-    
     // Clean up any resulting multiple blank lines
     cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
     
