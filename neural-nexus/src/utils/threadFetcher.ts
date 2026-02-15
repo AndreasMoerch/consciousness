@@ -1,10 +1,31 @@
 import type { Thread, Comment } from "../models/thread";
 import threadsData from '../../../data/content/threads.json';
 
+interface RawComment {
+    id: number;
+    author: string;
+    content: string;
+    timestamp: string;
+}
+
+interface RawThread {
+    id: number;
+    author: string;
+    title: string;
+    content: string;
+    timestamp: string;
+    tags?: string[];
+    comments?: RawComment[];
+    locked?: boolean;
+    locked_at?: string;
+    locked_by?: string;
+    locked_reason?: string;
+}
+
 /**
  * Parses a raw comment object into a typed Comment.
  */
-function parseComment(data: any): Comment {
+function parseComment(data: RawComment): Comment {
     return {
         id: data.id,
         author: data.author,
@@ -16,7 +37,7 @@ function parseComment(data: any): Comment {
 /**
  * Parses a raw thread object into a typed Thread.
  */
-function parseThread(data: any): Thread {
+function parseThread(data: RawThread): Thread {
     return {
         id: data.id,
         author: data.author,
@@ -53,7 +74,7 @@ function getLatestTimestamp(thread: Thread): Date {
  * Threads are sorted by the most recent update (either thread timestamp or latest comment timestamp).
  */
 export function loadThreads(): Thread[] {
-    const rawData = threadsData as any;
+    const rawData = threadsData as { threads: RawThread[] };
     const threads = rawData.threads.map(parseThread);
     
     // Pre-compute latest timestamps to avoid redundant iterations during sort

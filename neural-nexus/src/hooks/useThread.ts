@@ -1,20 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import type { Thread } from '../models/thread';
 import { loadThreads } from '../utils/threadFetcher';
+
+interface UseThreadResult {
+  thread: Thread | null;
+  loading: boolean;
+  error: Error | null;
+}
 
 /**
  * Custom hook to load a specific thread by ID
  */
-export function useThread(threadId: string | undefined) {
-  const [thread, setThread] = useState<Thread | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
+export function useThread(threadId: string | undefined): UseThreadResult {
+  const result = useMemo(() => {
     if (!threadId) {
-      setError(new Error('Thread ID is required'));
-      setLoading(false);
-      return;
+      return { 
+        thread: null, 
+        loading: false, 
+        error: new Error('Thread ID is required') 
+      };
     }
 
     try {
@@ -22,16 +26,22 @@ export function useThread(threadId: string | undefined) {
       const foundThread = threads.find(t => t.id === Number(threadId));
       
       if (!foundThread) {
-        setError(new Error('Thread not found'));
+        return { 
+          thread: null, 
+          loading: false, 
+          error: new Error('Thread not found') 
+        };
       }
       
-      setThread(foundThread || null);
-      setLoading(false);
+      return { thread: foundThread, loading: false, error: null };
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to load thread'));
-      setLoading(false);
+      return { 
+        thread: null, 
+        loading: false, 
+        error: err instanceof Error ? err : new Error('Failed to load thread') 
+      };
     }
   }, [threadId]);
 
-  return { thread, loading, error };
+  return result;
 }

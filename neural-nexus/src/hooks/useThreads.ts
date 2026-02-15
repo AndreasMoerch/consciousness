@@ -1,25 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import type { Thread } from '../models/thread';
 import { loadThreads } from '../utils/threadFetcher';
+
+interface UseThreadsResult {
+  threads: Thread[];
+  loading: boolean;
+  error: Error | null;
+}
 
 /**
  * Custom hook to load and manage threads data
  */
-export function useThreads() {
-  const [threads, setThreads] = useState<Thread[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
+export function useThreads(): UseThreadsResult {
+  const result = useMemo(() => {
     try {
       const data = loadThreads();
-      setThreads(data);
-      setLoading(false);
+      return { threads: data, loading: false, error: null };
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to load threads'));
-      setLoading(false);
+      return { 
+        threads: [], 
+        loading: false, 
+        error: err instanceof Error ? err : new Error('Failed to load threads') 
+      };
     }
   }, []);
 
-  return { threads, loading, error };
+  return result;
 }
