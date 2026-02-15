@@ -3,20 +3,11 @@ import { useThread } from '../hooks/useThread';
 import PageHeader from './PageHeader';
 import ThreadCard from './ThreadCard';
 import CommentCard from './CommentCard';
-import LoadingSpinner from './LoadingSpinner';
 import './ThreadComments.css';
 
 function ThreadComments() {
   const { threadId } = useParams<{ threadId: string }>();
-  const { thread, loading, error } = useThread(threadId);
-
-  if (loading) {
-    return (
-      <div className="app">
-        <LoadingSpinner message="Loading thread..." />
-      </div>
-    );
-  }
+  const { thread, error } = useThread(threadId);
 
   if (error || !thread) {
     return (

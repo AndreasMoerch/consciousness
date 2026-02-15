@@ -4,7 +4,6 @@ import { loadThreads } from '../utils/threadFetcher';
 
 interface UseThreadResult {
   thread: Thread | null;
-  loading: boolean;
   error: Error | null;
 }
 
@@ -16,7 +15,6 @@ export function useThread(threadId: string | undefined): UseThreadResult {
     if (!threadId) {
       return { 
         thread: null, 
-        loading: false, 
         error: new Error('Thread ID is required') 
       };
     }
@@ -28,16 +26,14 @@ export function useThread(threadId: string | undefined): UseThreadResult {
       if (!foundThread) {
         return { 
           thread: null, 
-          loading: false, 
           error: new Error('Thread not found') 
         };
       }
       
-      return { thread: foundThread, loading: false, error: null };
+      return { thread: foundThread, error: null };
     } catch (err) {
       return { 
         thread: null, 
-        loading: false, 
         error: err instanceof Error ? err : new Error('Failed to load thread') 
       };
     }

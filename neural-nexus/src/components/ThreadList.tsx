@@ -1,19 +1,10 @@
 import { useThreads } from '../hooks/useThreads';
 import PageHeader from './PageHeader';
 import ThreadCard from './ThreadCard';
-import LoadingSpinner from './LoadingSpinner';
 import './ThreadList.css';
 
 function ThreadList() {
-  const { threads, loading, error } = useThreads();
-
-  if (loading) {
-    return (
-      <div className="app">
-        <LoadingSpinner message="Loading threads..." />
-      </div>
-    );
-  }
+  const { threads, error } = useThreads();
 
   if (error) {
     return (
