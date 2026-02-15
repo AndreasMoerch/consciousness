@@ -56,10 +56,17 @@ export function loadThreads(): Thread[] {
     const rawData = threadsData as any;
     const threads = rawData.threads.map(parseThread);
     
-    // Sort threads by latest update (descending order - newest first)
-    return threads.sort((a: Thread, b: Thread) => {
-        const latestA = getLatestTimestamp(a);
-        const latestB = getLatestTimestamp(b);
-        return latestB.getTime() - latestA.getTime();
-    });
+    // Pre-compute latest timestamps to avoid redundant iterations during sort
+    type ThreadWithTimestamp = { thread: Thread; latestTimestamp: Date };
+    const threadTimestamps: ThreadWithTimestamp[] = threads.map((thread: Thread) => ({
+        thread,
+        latestTimestamp: getLatestTimestamp(thread)
+    }));
+    
+    // Sort by latest update (descending order - newest first)
+    threadTimestamps.sort((a: ThreadWithTimestamp, b: ThreadWithTimestamp) => 
+        b.latestTimestamp.getTime() - a.latestTimestamp.getTime()
+    );
+    
+    return threadTimestamps.map((item: ThreadWithTimestamp) => item.thread);
 }
