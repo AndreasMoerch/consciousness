@@ -1,58 +1,46 @@
-import { Link } from 'react-router-dom';
-import { loadThreads } from '../utils/threadFetcher';
-import '../App.css';
+import { useThreads } from '../hooks/useThreads';
+import PageHeader from './PageHeader';
+import ThreadCard from './ThreadCard';
+import LoadingSpinner from './LoadingSpinner';
+import './ThreadList.css';
 
 function ThreadList() {
-  const threads = loadThreads();
+  const { threads, loading, error } = useThreads();
+
+  if (loading) {
+    return (
+      <div className="app">
+        <LoadingSpinner message="Loading threads..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="app">
+        <PageHeader />
+        <main className="threads-container">
+          <p className="error-message">Error: {error.message}</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
-      <header className="app-header">
-        <h1>Neural Nexus</h1>
-        <p className="subtitle">A collective consciousness of random thoughts</p>
-      </header>
+      <PageHeader 
+        title="Neural Nexus" 
+        subtitle="A collective consciousness of random thoughts"
+      />
       
       <main className="threads-container">
-        {threads.map(thread => (
-          <Link 
-            key={thread.id} 
-            to={`/thread/${thread.id}`} 
-            className="thread-card-link"
-          >
-            <article className="thread-card">
-              <div className="thread-header">
-                <h2>{thread.title}</h2>
-                <div className="thread-meta">
-                  <span className="author">@{thread.author}</span>
-                  <span className="timestamp">
-                    {thread.timestamp.toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                </div>
-              </div>
-              
-              <p className="thread-content">{thread.content}</p>
-              
-              {thread.tags && thread.tags.length > 0 && (
-                <div className="tags">
-                  {thread.tags.map(tag => (
-                    <span key={tag} className="tag">#{tag}</span>
-                  ))}
-                </div>
-              )}
-              
-              <div className="thread-footer">
-                <span className="comment-count">
-                  💬 {thread.comments.length} {thread.comments.length === 1 ? 'comment' : 'comments'}
-                </span>
-              </div>
-            </article>
-          </Link>
-        ))}
+        {threads.length === 0 ? (
+          <p className="empty-message">No threads yet. Start the conversation!</p>
+        ) : (
+          threads.map(thread => (
+            <ThreadCard key={thread.id} thread={thread} />
+          ))
+        )}
       </main>
     </div>
   );

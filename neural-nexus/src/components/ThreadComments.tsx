@@ -1,21 +1,31 @@
-import { useParams, Link } from 'react-router-dom';
-import { loadThreads } from '../utils/threadFetcher';
-import '../App.css';
+import { useParams } from 'react-router-dom';
+import { useThread } from '../hooks/useThread';
+import PageHeader from './PageHeader';
+import ThreadCard from './ThreadCard';
+import CommentCard from './CommentCard';
+import LoadingSpinner from './LoadingSpinner';
 import './ThreadComments.css';
 
 function ThreadComments() {
   const { threadId } = useParams<{ threadId: string }>();
-  const threads = loadThreads();
-  const thread = threads.find(t => t.id === Number(threadId));
+  const { thread, loading, error } = useThread(threadId);
 
-  if (!thread) {
+  if (loading) {
     return (
       <div className="app">
-        <header className="app-header">
-          <Link to="/" className="back-link">← Back to Neural Nexus</Link>
-        </header>
+        <LoadingSpinner message="Loading thread..." />
+      </div>
+    );
+  }
+
+  if (error || !thread) {
+    return (
+      <div className="app">
+        <PageHeader showBackLink />
         <main className="threads-container">
-          <p>Thread not found.</p>
+          <p className="error-message">
+            {error?.message || 'Thread not found.'}
+          </p>
         </main>
       </div>
     );
@@ -23,38 +33,11 @@ function ThreadComments() {
 
   return (
     <div className="app">
-      <header className="app-header">
-        <Link to="/" className="back-link">← Back to Neural Nexus</Link>
-        <h1>{thread.title}</h1>
-      </header>
+      <PageHeader title={thread.title} showBackLink />
       
       <main className="threads-container">
         {/* Thread starter - highlighted */}
-        <article className="thread-card thread-starter">
-          <div className="thread-header">
-            <div className="thread-meta">
-              <span className="author">@{thread.author}</span>
-              <span className="timestamp">
-                {thread.timestamp.toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </span>
-            </div>
-          </div>
-          
-          <p className="thread-content">{thread.content}</p>
-          
-          {thread.tags && thread.tags.length > 0 && (
-            <div className="tags">
-              {thread.tags.map(tag => (
-                <span key={tag} className="tag">#{tag}</span>
-              ))}
-            </div>
-          )}
-        </article>
+        <ThreadCard thread={thread} isStarter />
 
         {/* Comments section */}
         <div className="comments-section">
@@ -65,22 +48,11 @@ function ThreadComments() {
           {thread.comments.length === 0 ? (
             <p className="no-comments">No comments yet. Be the first to comment!</p>
           ) : (
-            thread.comments.map(comment => (
-              <article key={comment.id} className="comment-card">
-                <div className="comment-header">
-                  <span className="author">@{comment.author}</span>
-                  <span className="timestamp">
-                    {comment.timestamp.toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                </div>
-                <p className="comment-content">{comment.content}</p>
-              </article>
-            ))
+            <div className="comments-list">
+              {thread.comments.map(comment => (
+                <CommentCard key={comment.id} comment={comment} />
+              ))}
+            </div>
           )}
         </div>
       </main>
