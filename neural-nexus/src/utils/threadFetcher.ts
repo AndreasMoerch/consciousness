@@ -33,9 +33,33 @@ function parseThread(data: any): Thread {
 }
 
 /**
+ * Gets the latest timestamp for a thread, considering both the thread's own timestamp
+ * and all of its comments' timestamps.
+ */
+function getLatestTimestamp(thread: Thread): Date {
+    let latestTimestamp = thread.timestamp;
+    
+    for (const comment of thread.comments) {
+        if (comment.timestamp > latestTimestamp) {
+            latestTimestamp = comment.timestamp;
+        }
+    }
+    
+    return latestTimestamp;
+}
+
+/**
  * Loads and parses all threads from the JSON data.
+ * Threads are sorted by the most recent update (either thread timestamp or latest comment timestamp).
  */
 export function loadThreads(): Thread[] {
     const rawData = threadsData as any;
-    return rawData.threads.map(parseThread);
+    const threads = rawData.threads.map(parseThread);
+    
+    // Sort threads by latest update (descending order - newest first)
+    return threads.sort((a: Thread, b: Thread) => {
+        const latestA = getLatestTimestamp(a);
+        const latestB = getLatestTimestamp(b);
+        return latestB.getTime() - latestA.getTime();
+    });
 }
