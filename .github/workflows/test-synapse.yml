@@ -8,8 +8,8 @@ on:
         default: 'false'
         type: boolean
   schedule:
-    # Run every 4 hours at minute 0
-    # At ~5 min per run, this uses ~90 minutes/month, well within GitHub's free tier limit (2000 minutes/month)
+    # Run every 4 hours at minute 0 (6 runs/day = 180 runs/month)
+    # At ~5 min per run: 900 min/month. At 10 min per run: 1800 min/month (within 2000 min free tier limit)
     - cron: '0 */4 * * *'
 
 # Ensure only one instance of this workflow is active at a time due to file I/O.
