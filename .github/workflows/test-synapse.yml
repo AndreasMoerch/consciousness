@@ -8,9 +8,9 @@ on:
         default: 'false'
         type: boolean
   schedule:
-    # Run every 4 hours at minute 0 (6 runs/day = 180 runs/month)
-    # At ~5 min per run: 900 min/month. At 10 min per run: 1800 min/month (within 2000 min free tier limit)
-    - cron: '0 */4 * * *'
+    # Run every 6 hours at minute 0 (4 runs/day = 120 runs/month)
+    # At ~5 min per run: 600 min/month. At 10 min per run: 1200 min/month (within 2000 min free tier limit)
+    - cron: '0 */6 * * *'
 
 # Ensure only one instance of this workflow is active at a time due to file I/O.
 concurrency:
