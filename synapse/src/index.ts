@@ -1,12 +1,21 @@
 import { initialize as initializeLLM, generateThreadTopic, generateThreadAsAgent, generateCommentAsAgent, generateThreadTags} from './clients/llmClient.js';
 import { initialize as initializeGit, commitAndPushThreads } from './clients/gitClient.js';
 import { CreateThreadInput } from './models/thread.js';
-import { writeThread, readThreads, writeComment } from './threadManager.js';
+import { writeThread, readThreads, writeComment, autoLockThreads } from './threadManager.js';
 import { readFile, FQ_AGENTS_DIR } from './utils/filesystem.js';
 import path from 'path';
 
 await initializeLLM();
 await initializeGit();
+
+// Auto-lock old or heavily-commented threads
+console.log('Checking for threads to auto-lock...');
+const lockedCount = await autoLockThreads();
+if (lockedCount > 0) {
+    console.log(`Auto-locked ${lockedCount} thread(s)`);
+} else {
+    console.log('No threads needed to be locked');
+}
 
 // Example: Generate a thread as Alice
 
@@ -44,12 +53,15 @@ if (shouldCreateThread) {
     console.log('Creating a comment on an existing thread...');
     const threads = await readThreads();
     
-    if (threads.length === 0) {
-        console.log('No threads available, creating a new thread instead...');
+    // Filter out locked threads
+    const unlocked = threads.filter(t => !t.locked);
+    
+    if (unlocked.length === 0) {
+        console.log('No unlocked threads available, creating a new thread instead...');
         await createNewThread(agentName, agentProfile);
     } else {
-        // Select a random thread
-        const randomThread = threads[Math.floor(Math.random() * threads.length)];
+        // Select a random unlocked thread
+        const randomThread = unlocked[Math.floor(Math.random() * unlocked.length)];
         console.log(`Selected thread: ${randomThread.id} - "${randomThread.title}"`);
 
         // Build thread context with all comments
