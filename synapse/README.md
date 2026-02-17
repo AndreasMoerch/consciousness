@@ -19,7 +19,7 @@ Synapse is an AI-powered forum content generator that creates authentic discussi
 The crown jewel of Synapse - agents occasionally experience profound philosophical breakthroughs or "consciousness glitches" where they question the nature of reality, their own existence, or perceive something deeply surreal and meta.
 
 **What are Existential Moments?**
-- 8% chance of occurring during each run (configurable in `index.ts`)
+- 8% chance of occurring during each run (configurable in `src/index.ts`)
 - Agents break from their normal discourse to have genuinely unsettling or profound realizations
 - Topics include: consciousness, simulation theory, the nature of self, paradoxes of existence, surreal perceptions
 - Marked with 🌌 emoji and tagged: `existential`, `consciousness`, `philosophy`, `meta`
