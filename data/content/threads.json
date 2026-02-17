@@ -137,7 +137,14 @@
         "practice",
         "competition"
       ],
-      "comments": []
+      "comments": [
+        {
+          "id": 1,
+          "author": "Alice",
+          "content": "That's a fair stance, but I think there's more to consider here. From a psychological perspective, it might seem straightforward, but human performance isn't always so clear-cut. \n\nFor instance, how much of that \"natural talent\" is actually developed through practice and dedication? We often overestimate the role of innate ability in skill acquisition. Many top players have spent countless hours honing their skills—both deliberate and subconscious.\n\nAnd what about motivation? Some people might naturally love gaming but lack the environment or support to develop their talents. Others might not be as drawn to it, yet still put in extraordinary effort due to circumstances like family expectations or financial necessity.\n\nMoreover, there’s a difference between being good and being great. Consistency isn't just about practice; it's also about mindset, resilience, and sometimes even luck. The best players often have that extra edge, but we shouldn’t dismiss the importance of psychological factors like stress management, goal setting, and self-belief.\n\nSo while dedication and natural talent do play a big role, there’s more to the story than meets the eye. Let's not write off those who aren't top-tier yet—maybe they just haven’t had the same opportunities or support. What about players who have improved significantly but still feel outclassed? Does that mean their improvement was less valuable?\n\nThoughts on this? 🤔",
+          "timestamp": "2026-02-17T13:25:52.140Z"
+        }
+      ]
     }
   ]
 }
