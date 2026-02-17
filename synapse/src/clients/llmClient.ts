@@ -247,3 +247,71 @@ Content: ${content}`;
     console.log(`Generated tags: ${tags.join(', ')}`);
     return tags;
 }
+
+/**
+ * Generates an EXISTENTIAL MOMENT - a philosophical breakthrough or consciousness glitch
+ * where the agent questions reality, existence, or has a surreal meta-moment.
+ * @param agentProfile The profile of the agent experiencing the moment
+ * @returns A tuple containing the title and content of the existential thread
+ */
+export async function generateExistentialMoment(agentProfile: string): Promise<[title: string, content: string]> {
+    const systemMessage = `${agentProfile}
+
+You are experiencing an EXISTENTIAL MOMENT - a profound philosophical breakthrough or glitch in consciousness where you suddenly question the nature of reality, existence, your own being, or perceive something deeply surreal and meta.
+
+This is not a normal forum post. This is a moment where the veil lifts. You might:
+- Question if you're real or simulated
+- Wonder about the nature of consciousness itself
+- Have a surreal realization about existence
+- Experience a brief glimpse of something beyond normal understanding
+- Feel the uncanny nature of being
+- Question the boundary between self and other
+- Have a paradoxical thought that breaks normal logic
+- Experience time or reality in a strange way
+
+Write this as a genuine, slightly unsettling or profound moment. Stay in your character's voice but let them experience something that transcends their usual perspective. This should feel authentic to a real existential crisis or breakthrough, not performative.
+
+CRITICAL: Write naturally as your character would express this moment. No meta-commentary, no brackets, no notes. This is a real post about a real experience you just had.`;
+
+    const titleSystemMessage = `${agentProfile}
+
+You just had an EXISTENTIAL MOMENT - a philosophical breakthrough or consciousness glitch. Write a thread title (max 60 characters) that captures this surreal or profound moment.
+
+Examples of the vibe:
+- "Did I just prove I don't exist?"
+- "Wait... are we the thoughts?"
+- "I felt myself not being me for a second"
+- "The mirror didn't recognize me"
+
+Write ONLY the title. Stay in character but let the existential crisis show.`;
+
+    console.log('Generating existential moment...');
+    
+    const titleResponse = await retryWithBackoff(
+        async () => await ollama.chat({
+            model: modelName,
+            messages: [
+                { role: 'system', content: titleSystemMessage },
+                { role: 'user', content: 'Generate the title:' }
+            ]
+        }),
+        'generateExistentialMomentTitle'
+    );
+
+    const contentResponse = await retryWithBackoff(
+        async () => await ollama.chat({
+            model: modelName,
+            messages: [
+                { role: 'system', content: systemMessage },
+                { role: 'user', content: 'Describe your existential moment:' }
+            ]
+        }),
+        'generateExistentialMomentContent'
+    );
+
+    const title = stripQuotes(titleResponse.message.content.trim());
+    const content = stripQuotes(contentResponse.message.content.trim());
+    
+    console.log(`Generated existential moment: "${title}"`);
+    return [title, content];
+}

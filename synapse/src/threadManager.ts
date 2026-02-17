@@ -2,7 +2,6 @@ import { promises as fs } from 'fs';
 import { CreateThreadInput, Thread } from './models/thread.js';
 import { Comment } from './models/comment.js';
 import { writeFile, readFile, FQ_THREADS_FILE_PATH } from './utils/filesystem.js';
-import { shouldLockThread, lockThread, getAutoLockReason } from './utils/threadLocking.js';
 
 /**
  * Represents the structure of the data stored in threads.json file.
@@ -87,32 +86,4 @@ export async function writeComment(threadId: number, author: string, content: st
 
     await writeFile(FQ_THREADS_FILE_PATH, JSON.stringify(updatedThreadsFile, null, 2));
     return commentId;
-}
-
-/**
- * Automatically locks threads that meet the auto-lock criteria (age or comment count).
- * @returns The number of threads that were locked.
- */
-export async function autoLockThreads(): Promise<number> {
-    const threads = await readThreads();
-    let lockedCount = 0;
-
-    const updatedThreads = threads.map(thread => {
-        if (shouldLockThread(thread)) {
-            const reason = getAutoLockReason(thread);
-            console.log(`Auto-locking thread ${thread.id}: "${thread.title}" - ${reason}`);
-            lockedCount++;
-            return lockThread(thread, reason);
-        }
-        return thread;
-    });
-
-    if (lockedCount > 0) {
-        const threadsFile: ThreadsFile = {
-            threads: updatedThreads,
-        };
-        await writeFile(FQ_THREADS_FILE_PATH, JSON.stringify(threadsFile, null, 2));
-    }
-
-    return lockedCount;
 }
