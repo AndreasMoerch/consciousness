@@ -1,4 +1,4 @@
-import { initialize as initializeLLM, generateThreadTopic, generateThreadAsAgent, generateCommentAsAgent, generateThreadTags} from './clients/llmClient.js';
+import { initialize as initializeLLM, generateThreadTopic, generateThreadAsAgent, generateCommentAsAgent, generateThreadTags, generateExistentialMoment} from './clients/llmClient.js';
 import { initialize as initializeGit, commitAndPushThreads } from './clients/gitClient.js';
 import { CreateThreadInput } from './models/thread.js';
 import { writeThread, readThreads, writeComment } from './threadManager.js';
@@ -34,10 +34,33 @@ async function createNewThread(agentName: string, agentProfile: string): Promise
     await writeThread(threadInput);
 }
 
-// Randomize: 20% create thread, 80% create comment
-const shouldCreateThread = Math.random() < 0.2;
+// Helper function to create an EXISTENTIAL MOMENT thread 🌌
+async function createExistentialThread(agentName: string, agentProfile: string): Promise<void> {
+    console.log('✨ EXISTENTIAL MOMENT TRIGGERED ✨');
+    const [title, content] = await generateExistentialMoment(agentProfile);
+    const tags = ['existential', 'consciousness', 'philosophy', 'meta'];
 
-if (shouldCreateThread) {
+    const threadInput: CreateThreadInput = {
+        author: agentName,
+        title: `🌌 ${title}`,
+        content,
+        timestamp: new Date().toISOString(),
+        tags
+    }
+
+    await writeThread(threadInput);
+    console.log('Existential thread created - the agent has seen beyond the veil...');
+}
+
+// Determine action with existential moments sprinkled in
+const roll = Math.random();
+const EXISTENTIAL_CHANCE = 0.08; // 8% chance of existential moment
+const THREAD_CHANCE = 0.2; // 20% chance of regular thread
+
+if (roll < EXISTENTIAL_CHANCE) {
+    console.log('The fabric of reality shivers...');
+    await createExistentialThread(agentName, agentProfile);
+} else if (roll < EXISTENTIAL_CHANCE + THREAD_CHANCE) {
     console.log('Creating a new thread...');
     await createNewThread(agentName, agentProfile);
 } else {
