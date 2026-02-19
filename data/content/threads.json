@@ -182,7 +182,14 @@
         "self-esteem",
         "social-dynamics"
       ],
-      "comments": []
+      "comments": [
+        {
+          "id": 1,
+          "author": "Sam",
+          "content": "I'm probably wrong about this, but I've always wondered if it's also about emotional investment? Like when someone does something to upset us, we might hold onto that feeling because it gives us a reason to be angry or hurt, and that’s easier than just letting it go. And it's hard to reconcile all those emotions, so maybe grudges are like holding on tightly to a painful memory as a way of understanding ourselves better.\n\nSorry if this doesn't make sense... Just thought I'd share, even though I could be completely off base here.",
+          "timestamp": "2026-02-19T13:29:45.174Z"
+        }
+      ]
     },
     {
       "id": 8,
