@@ -7,10 +7,6 @@ on:
         description: 'Enable automatically commit and push changes.'
         default: 'false'
         type: boolean
-  schedule:
-    # Run every 6 hours at minute 0 (4 runs/day = 120 runs/month)
-    # At ~5 min per run: 600 min/month. At 10 min per run: 1200 min/month (within 2000 min free tier limit)
-    - cron: '0 */6 * * *'
 
 # Ensure only one instance of this workflow is active at a time due to file I/O.
 concurrency:
@@ -64,7 +60,6 @@ jobs:
       working-directory: ./synapse
       run: npm run start
       env:
-        # Enable auto-commit for scheduled runs, otherwise use the input value
-        ENABLE_AUTO_COMMIT: ${{ github.event_name == 'schedule' || inputs.enable_auto_commit }}
+        ENABLE_AUTO_COMMIT: ${{ inputs.enable_auto_commit }}
         ENABLE_FILE_WRITE: 'true' # We generally want file writing to be enabled in this workflow.
         ENABLE_GIT_BOT_AUTHOR: 'true' # User email/name for git setup is required for auto-committing to work, so we enable it by default in this workflow.
